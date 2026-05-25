@@ -21,34 +21,39 @@ export default function HomePage() {
       <HowItWorks />
 
       {/* CTA Bottom */}
-      <section className="bg-primary py-16 px-4 text-center text-white">
-        <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
-          Siap Berangkat?
+      <section className="bg-primary py-20 px-4 text-center text-white">
+        <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+          Tingkatkan Standar Perjalanan Anda
         </h2>
-        <p className="text-white/75 mb-8 text-base">
-          Gabung dengan 10.000+ penumpang yang sudah mempercayai JaTravel.
+        <p className="text-white/80 mb-10 text-lg max-w-2xl mx-auto">
+          Percayakan kebutuhan mobilitas bisnis dan personal Anda pada infrastruktur transportasi yang andal, aman, dan terintegrasi penuh.
         </p>
         <a
           href="#hero"
-          className="inline-flex items-center gap-2 bg-white text-primary font-bold px-8 py-3.5 rounded-pill hover:bg-slate-100 transition-colors shadow-glow"
+          className="inline-flex items-center gap-2 bg-white text-primary font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors shadow-glow"
         >
-          Pesan Sekarang →
+          Mulai Reservasi Anda →
         </a>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-10 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <div>
-            <p className="text-white font-bold text-base mb-1">JaTravel</p>
-            <p>Platform travel antar kota &amp; rental mobil JapanarEna Corp.</p>
+      <footer className="bg-slate-950 text-slate-400 py-14 px-4 border-t border-slate-900">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8 text-sm">
+          <div className="max-w-sm">
+            <p className="text-white font-display font-bold text-xl mb-2 tracking-tight">JaTravel <span className="text-primary text-sm align-top">PRO</span></p>
+            <p className="leading-relaxed">
+              Layanan mobilitas korporat dan penyewaan armada eksklusif persembahan <span className="text-white font-medium">JapanarEna Corp</span>. Solusi transportasi dengan standar keamanan global.
+            </p>
           </div>
-          <div className="flex gap-6">
-            <a href="/auth/login" className="hover:text-white transition-colors">Masuk</a>
-            <a href="/register" className="hover:text-white transition-colors">Daftar</a>
-            <a href="/search" className="hover:text-white transition-colors">Cari Tiket</a>
+          <div className="flex flex-wrap gap-8 font-medium">
+            <a href="/auth/login" className="hover:text-white transition-colors">Client Portal</a>
+            <a href="/register" className="hover:text-white transition-colors">Corporate Registration</a>
+            <a href="/search" className="hover:text-white transition-colors">Fleet Availability</a>
           </div>
-          <p className="text-xs">© 2026 JapanarEna Corp. All rights reserved.</p>
+          <div className="md:text-right">
+            <p className="text-xs text-slate-500">© 2026 JapanarEna Corporation.</p>
+            <p className="text-xs text-slate-500 mt-1">All rights reserved worldwide.</p>
+          </div>
         </div>
       </footer>
     </main>
