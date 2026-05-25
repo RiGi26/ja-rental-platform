@@ -1,12 +1,13 @@
-'use client'
-export default function LoginPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-bg px-4">
-      <div className="w-full max-w-md bg-bg-card rounded-2xl shadow-card p-8">
-        <h1 className="text-2xl font-display font-bold text-text mb-6">Masuk</h1>
-        {/* TODO: form login — email/password, Google OAuth, OTP WA */}
-        <p className="text-text-muted text-sm">Form login belum diimplementasi.</p>
-      </div>
-    </div>
-  )
+import type { Metadata } from 'next'
+import LoginForm from '@/components/auth/LoginForm'
+
+export const metadata: Metadata = { title: 'Masuk' }
+
+interface Props {
+  searchParams: Promise<{ next?: string; error?: string }>
+}
+
+export default async function LoginPage({ searchParams }: Props) {
+  const { next = '/', error } = await searchParams
+  return <LoginForm next={next} errorParam={error} />
 }

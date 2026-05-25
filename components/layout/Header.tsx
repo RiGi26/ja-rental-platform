@@ -56,10 +56,10 @@ export default function Header() {
           <div className="h-4 w-px bg-slate-200 hidden sm:block" />
 
           {/* Login / Register */}
-          <Link href="/login" className="hidden sm:flex px-4 py-2 text-sm font-medium hover:bg-slate-100 rounded-lg transition-colors">
+          <Link href="/auth/login" className="hidden sm:flex px-4 py-2 text-sm font-medium hover:bg-slate-100 rounded-lg transition-colors">
             Masuk
           </Link>
-          <Link href="/register" className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full shadow-glow bg-primary hover:bg-primary-hover text-white transition-all">
+          <Link href="/auth/register" className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full shadow-glow bg-primary hover:bg-primary-hover text-white transition-all">
             <span className="hidden sm:inline">Daftar</span>
             <LogIn size={16} className="sm:hidden" />
           </Link>
