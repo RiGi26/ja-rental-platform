@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'Pesan tiket travel antar kota dan rental mobil premium secara online. Kursi realtime, e-ticket otomatis, tracking langsung.',
   openGraph: {
     title: 'JaTravel — Travel & Rental Mobil',
-    description: 'Platform booking travel antar kota & rental mobil JapanarEna Corp.',
+    description: 'Platform booking travel antar kota & rental mobil JapanArena Corp.',
     type: 'website',
   },
 }
@@ -42,7 +42,7 @@ export default function HomePage() {
           <div className="max-w-sm">
             <p className="text-white font-display font-bold text-xl mb-2 tracking-tight">JaTravel <span className="text-primary text-sm align-top">PRO</span></p>
             <p className="leading-relaxed">
-              Layanan mobilitas korporat dan penyewaan armada eksklusif persembahan <span className="text-white font-medium">JapanarEna Corp</span>. Solusi transportasi dengan standar keamanan global.
+              Layanan mobilitas korporat dan penyewaan armada eksklusif persembahan <span className="text-white font-medium">JapanArena Corp</span>. Solusi transportasi dengan standar keamanan global.
             </p>
           </div>
           <div className="flex flex-wrap gap-8 font-medium">
@@ -51,7 +51,7 @@ export default function HomePage() {
             <a href="/search" className="hover:text-white transition-colors">Fleet Availability</a>
           </div>
           <div className="md:text-right">
-            <p className="text-xs text-slate-500">© 2026 JapanarEna Corporation.</p>
+            <p className="text-xs text-slate-500">© 2026 JapanArena Corp.</p>
             <p className="text-xs text-slate-500 mt-1">All rights reserved worldwide.</p>
           </div>
         </div>

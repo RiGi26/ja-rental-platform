@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     default: 'JaTravel — Travel & Rental Mobil',
     template: '%s | JaTravel',
   },
-  description: 'Platform booking travel antar kota & rental mobil premium JapanarEna Corp.',
+  description: 'Platform booking travel antar kota & rental mobil premium JapanArena Corp.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

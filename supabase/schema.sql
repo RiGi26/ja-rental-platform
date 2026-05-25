@@ -1,6 +1,6 @@
 -- ============================================================
 -- JA Travel Platform — Database Schema
--- JapanarEna Corp • v1.0
+-- JapanArena Corp • v1.0
 -- ============================================================
 
 -- ── Extensions ────────────────────────────────────────────────
@@ -167,7 +167,7 @@ create table ratings (
 );
 
 -- ============================================================
--- RLS Policies — Multi-Tenant Pattern JapanarEna Corp
+-- RLS Policies — Multi-Tenant Pattern JapanArena Corp
 -- ============================================================
 
 alter table tenants        enable row level security;
