@@ -98,11 +98,11 @@ export default async function ConfirmPage({ params }: Props) {
             ← Kembali ke Beranda
           </Link>
           <Link
-            href={`/account/bookings/${bookingCode}`}
+            href="/account"
             className="flex-1 text-center text-sm font-semibold bg-primary text-white
                        hover:bg-primary-hover px-5 py-3 rounded-xl transition-colors shadow-glow"
           >
-            Lacak Perjalanan →
+            Lihat Riwayat Booking →
           </Link>
         </div>
       </div>
