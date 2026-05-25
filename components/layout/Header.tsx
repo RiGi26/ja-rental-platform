@@ -27,7 +27,7 @@ export default function Header() {
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Language & Currency */}
           <div className="hidden sm:flex items-center gap-2">
-            <Select value={lang} onValueChange={setLang}>
+            <Select value={lang} onValueChange={(val) => setLang(val ?? 'ID')}>
               <SelectTrigger className="w-[80px] h-9 border-none bg-transparent hover:bg-slate-100 focus:ring-0 shadow-none">
                 <Globe size={16} className="text-slate-500 mr-1" />
                 <SelectValue />
@@ -41,7 +41,7 @@ export default function Header() {
 
             <div className="h-4 w-px bg-slate-200" />
 
-            <Select value={currency} onValueChange={setCurrency}>
+            <Select value={currency} onValueChange={(val) => setCurrency(val ?? 'JPY')}>
               <SelectTrigger className="w-[80px] h-9 border-none bg-transparent hover:bg-slate-100 focus:ring-0 shadow-none font-medium">
                 <SelectValue />
               </SelectTrigger>
@@ -56,15 +56,13 @@ export default function Header() {
           <div className="h-4 w-px bg-slate-200 hidden sm:block" />
 
           {/* Login / Register */}
-          <Button variant="ghost" className="hidden sm:flex" asChild>
-            <Link href="/login">Masuk</Link>
-          </Button>
-          <Button className="rounded-full shadow-glow bg-primary hover:bg-primary-hover text-white" asChild>
-            <Link href="/register">
-              <span className="hidden sm:inline">Daftar</span>
-              <LogIn size={16} className="sm:hidden" />
-            </Link>
-          </Button>
+          <Link href="/login" className="hidden sm:flex px-4 py-2 text-sm font-medium hover:bg-slate-100 rounded-lg transition-colors">
+            Masuk
+          </Link>
+          <Link href="/register" className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full shadow-glow bg-primary hover:bg-primary-hover text-white transition-all">
+            <span className="hidden sm:inline">Daftar</span>
+            <LogIn size={16} className="sm:hidden" />
+          </Link>
         </div>
       </div>
     </header>
