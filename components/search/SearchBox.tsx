@@ -1,8 +1,8 @@
 'use client'
-import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import TravelSearchForm from './TravelSearchForm'
 import RentalSearchForm from './RentalSearchForm'
+import { useHomeStore } from '@/store/useHomeStore'
 
 type Tab = 'travel' | 'rental'
 
@@ -12,7 +12,7 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 ]
 
 export default function SearchBox() {
-  const [activeTab, setActiveTab] = useState<Tab>('travel')
+  const { searchMode, setSearchMode } = useHomeStore()
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -22,14 +22,14 @@ export default function SearchBox() {
           {tabs.map(tab => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => setSearchMode(tab.key)}
               className={`relative px-5 py-2.5 rounded-full text-sm font-semibold transition-colors duration-200 ${
-                activeTab === tab.key
+                searchMode === tab.key
                   ? 'text-primary'
                   : 'text-white/80 hover:text-white'
               }`}
             >
-              {activeTab === tab.key && (
+              {searchMode === tab.key && (
                 <motion.span
                   layoutId="search-tab-bg"
                   className="absolute inset-0 bg-white rounded-full shadow-sm"
@@ -54,13 +54,13 @@ export default function SearchBox() {
       >
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: activeTab === 'travel' ? -12 : 12 }}
+            key={searchMode}
+            initial={{ opacity: 0, x: searchMode === 'travel' ? -12 : 12 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: activeTab === 'travel' ? 12 : -12 }}
+            exit={{ opacity: 0, x: searchMode === 'travel' ? 12 : -12 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'travel' ? <TravelSearchForm /> : <RentalSearchForm />}
+            {searchMode === 'travel' ? <TravelSearchForm /> : <RentalSearchForm />}
           </motion.div>
         </AnimatePresence>
       </motion.div>
