@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans, Geist } from 'next/font/google'
 import './globals.css'
+import { cn } from "@/lib/utils";
+import Header from '@/components/layout/Header'
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,8 +28,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}>
-      <body className="min-h-full bg-bg text-text font-sans">{children}</body>
+    <html lang="id" className={cn("h-full", "antialiased", inter.variable, plusJakartaSans.variable, "font-sans", geist.variable)}>
+      <body className="min-h-full bg-bg text-text font-sans">
+        <Header />
+        {children}
+      </body>
     </html>
   )
 }
