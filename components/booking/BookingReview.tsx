@@ -35,7 +35,7 @@ export default function BookingReview({ schedule, scheduleId }: Props) {
       const result = await createBooking({
         scheduleId,
         seats:          selectedSeats,
-        pickupPointId:  pickupPointId!,
+        pickupPointId:  pickupPointId,
         passengers:     passengerDetails,
         totalAmount:    total,
       })

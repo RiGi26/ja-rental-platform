@@ -57,7 +57,7 @@ export const useBookingStore = create<BookingState & BookingActions>()(
     }),
     {
       name: 'ja-booking-session',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
     }
   )
 )

@@ -20,7 +20,7 @@ export default async function ConfirmPage({ params }: Props) {
   const { data: booking } = await supabase
     .from('bookings')
     .select(`
-      id, booking_code, payment_status, total_amount, pickup_point_id,
+      id, booking_code, schedule_id, payment_status, total_amount, pickup_point_id,
       passengers(*),
       schedule:schedules(
         depart_at,
@@ -54,11 +54,11 @@ export default async function ConfirmPage({ params }: Props) {
 
   // Ambil pickup point labels dari booking jika ada pickup_points
   const pickupPoints: { id: string; label: string }[] = []
-  if (booking.pickup_point_id) {
+  if (booking.pickup_point_id && (booking as { schedule_id?: string }).schedule_id) {
     const { data: schedData } = await supabase
       .from('schedules')
       .select('pickup_points')
-      .eq('id', (booking as { schedule_id?: string }).schedule_id ?? '')
+      .eq('id', (booking as { schedule_id?: string }).schedule_id!)
       .maybeSingle()
     const raw = (schedData?.pickup_points ?? []) as { id: string; label: string }[]
     pickupPoints.push(...raw)

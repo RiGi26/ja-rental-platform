@@ -6,7 +6,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 interface CreateBookingInput {
   scheduleId: string
   seats: string[]
-  pickupPointId: string
+  pickupPointId: string | null
   passengers: { name: string; phone: string; seat_number: string }[]
   totalAmount: number
 }
