@@ -1,7 +1,7 @@
 'use server'
 
 import { createServiceClient } from '@/lib/supabase/service'
-import type { Schedule, TravelSearchParams } from '@/lib/types'
+import type { Schedule, TravelSearchParams, RentalSearchParams, VehicleType, VehicleWithPrice } from '@/lib/types'
 
 export async function searchSchedules(params: TravelSearchParams): Promise<Schedule[]> {
   // Service client: bypass RLS agar halaman search bisa diakses tanpa login
@@ -88,6 +88,80 @@ export async function getScheduleById(scheduleId: string): Promise<Schedule | nu
     return null
   }
   return data as unknown as Schedule
+}
+
+const RENTAL_VEHICLE_TYPES: VehicleType[] = ['sedan', 'suv', 'van', 'minibus', 'bus']
+
+const PRICE_BY_TYPE: Record<VehicleType, number> = {
+  sedan:   400_000,
+  suv:     600_000,
+  van:     450_000,
+  minibus: 500_000,
+  bus:     800_000,
+}
+
+export async function searchRentalVehicles(params: RentalSearchParams): Promise<VehicleWithPrice[]> {
+  const supabase = createServiceClient()
+
+  console.log('[searchRentalVehicles] params:', params)
+
+  // Step 1: get all available vehicles of rental types
+  const { data: vehicles, error: vErr } = await supabase
+    .from('vehicles')
+    .select('*')
+    .in('type', RENTAL_VEHICLE_TYPES)
+    .eq('status', 'available')
+
+  if (vErr) {
+    console.error('[searchRentalVehicles] vehicles error:', vErr.message)
+    return []
+  }
+  if (!vehicles || vehicles.length === 0) return []
+
+  console.log('[searchRentalVehicles] total vehicles:', vehicles.length)
+
+  const vehicleIds = vehicles.map(v => v.id as string)
+
+  // Step 2: find active rental bookings for these vehicles
+  const { data: activeBookings } = await supabase
+    .from('bookings')
+    .select('id, vehicle_id')
+    .in('vehicle_id', vehicleIds)
+    .eq('type', 'rental')
+    .not('status', 'in', '(cancelled,expired)')
+    .not('vehicle_id', 'is', null)
+
+  const bookedVehicleIds = new Set<string>()
+
+  if (activeBookings && activeBookings.length > 0) {
+    const activeBookingIds = activeBookings.map(b => b.id as string)
+
+    // Step 3: find which of those overlap with requested dates
+    // overlap: rd.start_date <= params.end AND rd.end_date >= params.start
+    const { data: conflictingRDs } = await supabase
+      .from('rental_details')
+      .select('booking_id')
+      .in('booking_id', activeBookingIds)
+      .lte('start_date', params.end)
+      .gte('end_date', params.start)
+
+    const conflictingIds = new Set((conflictingRDs ?? []).map(r => r.booking_id as string))
+
+    for (const b of activeBookings) {
+      if (conflictingIds.has(b.id as string) && b.vehicle_id) {
+        bookedVehicleIds.add(b.vehicle_id as string)
+      }
+    }
+  }
+
+  console.log('[searchRentalVehicles] booked vehicle ids:', bookedVehicleIds.size)
+
+  return vehicles
+    .filter(v => !bookedVehicleIds.has(v.id as string))
+    .map(v => ({
+      ...(v as unknown as VehicleWithPrice),
+      price_per_day: PRICE_BY_TYPE[v.type as VehicleType] ?? 400_000,
+    }))
 }
 
 // Menggunakan service role agar bisa baca passengers tanpa RLS

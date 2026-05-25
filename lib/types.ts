@@ -206,6 +206,11 @@ export interface Rating {
   created_at: string
 }
 
+// ── Vehicle with computed price ───────────────────────────────────────────────
+export interface VehicleWithPrice extends Vehicle {
+  price_per_day: number
+}
+
 // ── Search Params ─────────────────────────────────────────────────────────────
 export interface TravelSearchParams {
   origin: string
