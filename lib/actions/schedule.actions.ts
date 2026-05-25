@@ -1,13 +1,15 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import type { Schedule, TravelSearchParams } from '@/lib/types'
 
 export async function searchSchedules(params: TravelSearchParams): Promise<Schedule[]> {
-  const supabase = await createClient()
+  // Service client: bypass RLS agar halaman search bisa diakses tanpa login
+  const supabase = createServiceClient()
 
-  // Step 1: route IDs yang cocok (case-insensitive)
+  console.log('[searchSchedules] params:', params)
+
+  // STEP 1: Cari route IDs yang cocok (case-insensitive exact match)
   const { data: routes, error: routeErr } = await supabase
     .from('routes')
     .select('id')
@@ -15,13 +17,23 @@ export async function searchSchedules(params: TravelSearchParams): Promise<Sched
     .ilike('destination', params.destination.trim())
     .eq('is_active', true)
 
-  if (routeErr || !routes || routes.length === 0) return []
+  console.log('[searchSchedules] routes found:', routes?.length ?? 0, 'routeErr:', routeErr?.message ?? null)
+
+  if (routeErr) {
+    console.error('[searchSchedules] route query error:', routeErr.message)
+    return []
+  }
+  if (!routes || routes.length === 0) return []
 
   const routeIds = routes.map(r => r.id as string)
 
-  // Step 2: jadwal pada tanggal yang diminta (WIB = UTC+7)
+  // STEP 2: Cari jadwal pada tanggal yang diminta (WIB = UTC+7)
+  // Data di DB disimpan sebagai timestamptz, Supabase membandingkan dalam UTC.
+  // Dengan offset +07:00, filter mencakup 00:00 – 23:59 WIB.
   const startOfDay = `${params.date}T00:00:00+07:00`
   const endOfDay   = `${params.date}T23:59:59+07:00`
+
+  console.log('[searchSchedules] date range WIB:', startOfDay, '→', endOfDay)
 
   const { data: schedules, error: schedErr } = await supabase
     .from('schedules')
@@ -42,8 +54,10 @@ export async function searchSchedules(params: TravelSearchParams): Promise<Sched
     .gte('seats_available', params.passengers)
     .order('depart_at', { ascending: true })
 
+  console.log('[searchSchedules] raw schedules:', schedules?.length ?? 0, 'schedErr:', schedErr?.message ?? null)
+
   if (schedErr) {
-    console.error('[searchSchedules]', schedErr.message)
+    console.error('[searchSchedules] schedule query error:', schedErr.message)
     return []
   }
 
@@ -51,7 +65,8 @@ export async function searchSchedules(params: TravelSearchParams): Promise<Sched
 }
 
 export async function getScheduleById(scheduleId: string): Promise<Schedule | null> {
-  const supabase = await createClient()
+  // Service client: booking page bisa diakses tanpa login
+  const supabase = createServiceClient()
 
   const { data, error } = await supabase
     .from('schedules')
@@ -68,7 +83,10 @@ export async function getScheduleById(scheduleId: string): Promise<Schedule | nu
     .eq('is_cancelled', false)
     .single()
 
-  if (error || !data) return null
+  if (error || !data) {
+    console.error('[getScheduleById]', error?.message)
+    return null
+  }
   return data as unknown as Schedule
 }
 
@@ -96,5 +114,5 @@ export async function getOccupiedSeats(scheduleId: string): Promise<string[]> {
     }
   }
 
-  return [...new Set(seats)] // deduplicate
+  return [...new Set(seats)]
 }
