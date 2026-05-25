@@ -2,33 +2,22 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const PUBLIC_PREFIXES = [
-  '/auth/',
-  '/register',
-  '/search',
-  '/booking',
-  '/api/booking',
-  '/api/payment',
-  '/api/auth',
-  '/api/register',
+// Hanya path ini yang memerlukan autentikasi
+const PROTECTED_PREFIXES = [
+  '/account',
+  '/admin',
+  '/owner',
+  '/driver',
 ]
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon') ||
-    pathname.startsWith('/images') ||
-    pathname.startsWith('/icons')
-  ) {
-    return NextResponse.next()
-  }
+  // Cek apakah path ini perlu login
+  const isProtected = PROTECTED_PREFIXES.some(p => pathname.startsWith(p))
+  if (!isProtected) return NextResponse.next()
 
-  if (PUBLIC_PREFIXES.some(p => pathname.startsWith(p))) {
-    return NextResponse.next()
-  }
-
+  // Buat response dasar dulu agar cookie Supabase bisa diperbarui
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -58,7 +47,12 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // Hanya jalankan proxy pada path yang mungkin protected
+  // Abaikan static assets dan Next.js internals
   matcher: [
-    '/((?!_next/static|_next/image|favicon\\.ico|images|icons).*)',
+    '/account/:path*',
+    '/admin/:path*',
+    '/owner/:path*',
+    '/driver/:path*',
   ],
 }
