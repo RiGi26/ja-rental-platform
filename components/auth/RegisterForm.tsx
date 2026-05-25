@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
+const GOOGLE_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
+
 interface Props {
   next: string
 }
@@ -207,31 +209,34 @@ export default function RegisterForm({ next }: Props) {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-white px-3 text-xs text-slate-400">atau</span>
-            </div>
-          </div>
+          {/* Google OAuth — hanya tampil jika NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true */}
+          {GOOGLE_ENABLED && (
+            <>
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-white px-3 text-xs text-slate-400">atau</span>
+                </div>
+              </div>
 
-          {/* Google OAuth */}
-          <button
-            type="button"
-            onClick={handleGoogle}
-            disabled={loading || googleLoading}
-            className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl
-                       py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors
-                       disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {googleLoading
-              ? <Loader2 size={18} className="animate-spin" />
-              : <GoogleIcon />
-            }
-            Daftar dengan Google
-          </button>
+              <button
+                type="button"
+                onClick={handleGoogle}
+                disabled={loading || googleLoading}
+                className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl
+                           py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors
+                           disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {googleLoading
+                  ? <Loader2 size={18} className="animate-spin" />
+                  : <GoogleIcon />
+                }
+                Daftar dengan Google
+              </button>
+            </>
+          )}
 
           <p className="text-center text-sm text-slate-500 mt-6">
             Sudah punya akun?{' '}
