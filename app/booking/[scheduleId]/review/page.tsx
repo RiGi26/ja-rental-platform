@@ -26,8 +26,21 @@ export default function ReviewPage() {
     if (!mounted) return
 
     async function init() {
+      // Fetch jadwal dulu untuk tahu apakah ada pickup points
+      const fresh = await getScheduleById(scheduleId)
+      if (!fresh) {
+        router.replace('/')
+        return
+      }
+
+      const hasPickupPoints = (fresh.pickup_points ?? []).length > 0
+
       // Guard: state booking tidak lengkap
-      if (selectedSeats.length === 0 || passengerDetails.length === 0 || !pickupPointId) {
+      if (
+        selectedSeats.length === 0 ||
+        passengerDetails.length === 0 ||
+        (hasPickupPoints && !pickupPointId)
+      ) {
         router.replace(`/booking/${scheduleId}`)
         return
       }
@@ -37,13 +50,6 @@ export default function ReviewPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push(`/auth/login?next=/booking/${scheduleId}/review`)
-        return
-      }
-
-      // Fetch harga terbaru dari DB
-      const fresh = await getScheduleById(scheduleId)
-      if (!fresh) {
-        router.replace('/')
         return
       }
 

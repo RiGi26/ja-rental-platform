@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SeatPicker from './SeatPicker'
 import PickupPointSelector from './PickupPointSelector'
@@ -32,27 +32,28 @@ export default function BookingInteractive({
     setTotal(schedule.price_adult * passengers)
   }, [schedule, passengers, setSchedule, setTotal])
 
-  function handleSeatsChange(seats: string[]) {
+  const handleSeatsChange = useCallback((seats: string[]) => {
     setLocalSeats(seats)
     setSeats(seats)
     setTotal(schedule.price_adult * seats.length)
-  }
+  }, [setSeats, setTotal, schedule.price_adult])
 
-  function handlePickupSelect(id: string) {
+  const handlePickupSelect = useCallback((id: string) => {
     setLocalPickup(id)
     setPickupPoint(id)
-  }
+  }, [setPickupPoint])
 
-  const canContinue = localSeats.length === passengers && localPickup !== null
+  const pickupPoints = schedule.pickup_points ?? []
+  const hasPickupPoints = pickupPoints.length > 0
+  const totalPrice = schedule.price_adult * (localSeats.length || passengers)
+
+  const canContinue =
+    localSeats.length === passengers && (!hasPickupPoints || localPickup !== null)
 
   function handleContinue() {
     if (!canContinue) return
     router.push(`/booking/${schedule.id}/passenger?passengers=${passengers}`)
   }
-
-  const pickupPoints = schedule.pickup_points ?? []
-  const hasPickupPoints = pickupPoints.length > 0
-  const totalPrice = schedule.price_adult * (localSeats.length || passengers)
 
   return (
     <div className="space-y-6">
@@ -89,8 +90,10 @@ export default function BookingInteractive({
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-xs text-slate-400">Total harga</p>
-            <p className="text-xl font-bold text-primary">{formatRupiah(totalPrice)}</p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xl font-bold text-primary" suppressHydrationWarning>
+              {formatRupiah(totalPrice)}
+            </p>
+            <p className="text-xs text-slate-400" suppressHydrationWarning>
               {schedule.price_adult.toLocaleString('id-ID')} × {localSeats.length || passengers} penumpang
             </p>
           </div>

@@ -8,8 +8,11 @@ interface Props {
 export default function ScheduleSummary({ schedule }: Props) {
   const { route, vehicle } = schedule
   const duration = route?.duration_est ?? route?.duration_minutes ?? 0
-  const arrivalMs = new Date(schedule.depart_at).getTime() + duration * 60 * 1000
-  const arrivalTime = formatTime(new Date(arrivalMs).toISOString())
+  const departMs = new Date(schedule.depart_at).getTime()
+  const arrivalMs = departMs + duration * 60 * 1000
+  const arrivalTime = Number.isFinite(arrivalMs)
+    ? formatTime(new Date(arrivalMs).toISOString())
+    : '—'
 
   return (
     <div className="rounded-2xl overflow-hidden shadow-card mb-6">
