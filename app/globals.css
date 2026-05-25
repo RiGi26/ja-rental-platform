@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* ── JapanarEna Travel Blue ── */
+  /* ── JapanArena Travel Blue ── */
   --color-primary:        #1A56DB;
   --color-primary-hover:  #1447C0;
   --color-secondary:      #0EA5E9;
