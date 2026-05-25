@@ -32,13 +32,13 @@ export default function HeroSection() {
         {/* Headline */}
         <h1 className="text-center text-white font-display font-bold leading-tight mb-4"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-          Perjalanan Nyaman,<br />
-          <span className="text-sky-300">Pesan dalam 3 Menit</span>
+          Mobilitas Tanpa Batas,<br />
+          <span className="text-sky-300">Bebas Repot</span>
         </h1>
 
         <p className="text-center text-white/70 text-base md:text-lg max-w-xl mb-10">
-          Travel antar kota &amp; rental mobil premium — kursi realtime,
-          e-ticket otomatis, tracking langsung di HP.
+          Sewa mobil eksklusif atau pesan travel antar kota dengan ketersediaan real-time.
+          Langsung jalan dengan e-ticket dan live tracking.
         </p>
 
         {/* SearchBox */}
@@ -49,9 +49,9 @@ export default function HeroSection() {
         {/* Social Proof */}
         <div className="mt-10 flex flex-wrap justify-center gap-6 text-white/60 text-sm">
           {[
-            { value: '10.000+', label: 'Penumpang' },
-            { value: '50+', label: 'Rute Tersedia' },
-            { value: '4.8★', label: 'Rating' },
+            { value: 'Ribuan', label: 'Perjalanan Sukses' },
+            { value: '15+', label: 'Kota Tersedia' },
+            { value: 'Terpercaya', label: 'Oleh Pelanggan' },
             { value: '24/7', label: 'Dukungan' },
           ].map(item => (
             <div key={item.label} className="flex flex-col items-center gap-0.5">

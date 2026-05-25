@@ -149,7 +149,7 @@ export default function TravelSearchForm() {
           type="submit"
           className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-xl transition-colors glow-btn whitespace-nowrap"
         >
-          Cari Tiket
+          Lihat Jadwal Travel
           <ArrowRight size={16} />
         </button>
       </div>

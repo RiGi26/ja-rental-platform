@@ -123,7 +123,7 @@ export default function RentalSearchForm() {
           type="submit"
           className="h-12 px-8 rounded-xl font-bold bg-primary hover:bg-primary-hover text-white shadow-glow transition-all active:scale-95 whitespace-nowrap gap-2"
         >
-          Cari Rental
+          Cek Ketersediaan Mobil
           <ArrowRight size={18} />
         </Button>
       </div>

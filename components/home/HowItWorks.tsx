@@ -6,42 +6,42 @@ import { motion, AnimatePresence } from 'framer-motion'
 const travelSteps = [
   {
     step: '01',
-    icon: '🔍',
-    title: 'Cari Jadwal Travel',
-    desc: 'Masukkan kota asal, tujuan, tanggal, dan jumlah penumpang. Kami tampilkan jadwal realtime dengan armada terbaik.',
+    icon: '📍',
+    title: 'Pilih Rute Keberangkatan',
+    desc: 'Masukkan titik asal dan tujuan. Temukan jadwal keberangkatan armada yang sesuai dengan agenda Anda.',
   },
   {
     step: '02',
     icon: '💺',
-    title: 'Pilih Kursi & Bayar',
-    desc: 'Pilih kursi favoritmu secara visual. Bayar via QRIS, Virtual Account, atau e-wallet dalam hitungan detik.',
+    title: 'Amankan Kursi Favorit',
+    desc: 'Pilih posisi tempat duduk secara visual. Selesaikan pembayaran dengan aman sebelum waktu habis.',
   },
   {
     step: '03',
-    icon: '🎫',
-    title: 'E-Ticket Langsung',
-    desc: 'E-ticket dan link live tracking supir dikirim otomatis ke WA & email. Tinggal tunggu jemputan!',
+    icon: '📱',
+    title: 'Berangkat Lebih Tenang',
+    desc: 'Anda akan menerima E-Ticket dan tautan untuk melacak posisi sopir secara real-time menjelang keberangkatan.',
   },
 ]
 
 const rentalSteps = [
   {
     step: '01',
-    icon: '🚗',
-    title: 'Pilih Mobil',
-    desc: 'Tentukan lokasi ambil, tanggal sewa, dan pilih "Lepas Kunci" atau "Dengan Driver".',
+    icon: '📅',
+    title: 'Tentukan Jadwal & Lokasi',
+    desc: 'Pilih mobil sesuai kebutuhan perjalanan Anda, lengkapi dengan opsi "Lepas Kunci" atau tambahan Driver profesional.',
   },
   {
     step: '02',
-    icon: '📄',
-    title: 'Upload Dokumen',
-    desc: 'Bila lepas kunci, upload SIM Internasional Anda. Kami tampilkan rincian harga transparan termasuk deposit.',
+    icon: '💳',
+    title: 'Verifikasi & Bayar',
+    desc: 'Lengkapi dokumen secara online. Selesaikan pembayaran dengan aman melalui berbagai pilihan metode bayar lokal.',
   },
   {
     step: '03',
     icon: '🔑',
-    title: 'Serah Terima Kendaraan',
-    desc: 'Tunjukkan QR Code pemesanan di loket bandara/stasiun untuk serah terima armada yang siap pakai.',
+    title: 'Ambil Kunci & Jalan',
+    desc: 'Tunjukkan E-Ticket di lokasi penjemputan atau bandara. Armada Anda sudah siap dan telah dibersihkan.',
   },
 ]
 
