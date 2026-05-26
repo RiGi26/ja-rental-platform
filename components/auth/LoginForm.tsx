@@ -3,8 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, ShieldCheck, ArrowLeft, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
+import { triggerHaptic } from '@/lib/ux-utils'
 
 const GOOGLE_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
 
@@ -29,25 +34,48 @@ export default function LoginForm({ next, errorParam }: Props) {
   const [showPassword,  setShowPassword]  = useState(false)
   const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [error,         setError]         = useState<string | null>(
-    errorParam === 'auth_failed' ? 'Autentikasi gagal. Silakan coba lagi.' : null
-  )
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    triggerHaptic()
 
     const supabase = createClient()
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      setError('Email atau password salah. Silakan coba lagi.')
+      toast.error('Email atau password salah. Silakan coba lagi.')
       setLoading(false)
       return
     }
 
+    toast.success('Berhasil masuk!')
     router.push(next !== '/' ? next : '/account')
+    router.refresh()
+  }
+
+  async function handleDemoLogin(role: 'admin' | 'driver') {
+    setLoading(true)
+    triggerHaptic()
+    
+    // Akun demo mapping
+    const demoEmail = role === 'admin' ? 'admin@demo.com' : 'driver@demo.com'
+    const demoPass  = 'Demo@1234'
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({ 
+      email: demoEmail, 
+      password: demoPass 
+    })
+
+    if (error) {
+      toast.error('Gagal masuk ke akun demo. Silakan coba manual.')
+      setLoading(false)
+      return
+    }
+
+    toast.success(`Masuk sebagai ${role === 'admin' ? 'Administrator' : 'Supir'} Demo`)
+    router.push(role === 'admin' ? '/admin' : '/driver')
     router.refresh()
   }
 
@@ -64,42 +92,41 @@ export default function LoginForm({ next, errorParam }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 font-sans">
       <div className="w-full max-w-md">
 
-        {/* Branding */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center
-                            text-white font-bold text-xl group-hover:bg-primary-hover transition-colors">
-              J
-            </div>
-            <span className="font-display font-bold text-2xl text-slate-900">JaTravel</span>
-          </Link>
-        </div>
+        {/* Back Button */}
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-colors mb-8 group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          Kembali ke Beranda
+        </Link>
 
-        <div className="bg-white rounded-2xl shadow-card p-8">
-          <div className="mb-6">
-            <h1 className="font-display font-bold text-xl text-slate-900 mb-1">
-              Masuk ke JaTravel
+        {/* Form Card */}
+        <div className="bg-white rounded-[32px] shadow-panel border border-slate-100 p-8 md:p-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-[0.03]">
+             <ShieldCheck size={120} />
+          </div>
+
+          <div className="mb-8 relative z-10">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-4">
+               <ShieldCheck size={24} />
+            </div>
+            <h1 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-1">
+              Masuk Portal.
             </h1>
-            <p className="text-slate-500 text-sm">
-              Masukkan email dan password Anda
+            <p className="text-slate-500 text-sm font-medium">
+              Akses panel manajemen JapanArena Travel.
             </p>
           </div>
 
-          {error && (
-            <div className="mb-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                Email
-              </label>
-              <input
+          <form onSubmit={handleLogin} className="space-y-5 relative z-10">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email</Label>
+              <Input
+                id="email"
                 type="email"
                 required
                 autoFocus
@@ -107,60 +134,72 @@ export default function LoginForm({ next, errorParam }: Props) {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="nama@email.com"
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800
-                           placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40
-                           focus:border-primary transition-all"
+                className="h-12 px-4 rounded-xl border-slate-200 focus-visible:ring-primary/20 shadow-sm"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                Password
-              </label>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center px-1">
+                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</Label>
+                <Link href="/auth/forgot" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Lupa?</Link>
+              </div>
               <div className="relative">
-                <input
+                <Input
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-800
-                             placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40
-                             focus:border-primary transition-all"
+                  className="h-12 px-4 pr-11 rounded-xl border-slate-200 focus-visible:ring-primary/20 shadow-sm"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  onClick={() => { setShowPassword(v => !v); triggerHaptic(5); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={loading || googleLoading}
-              className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-xl
-                         transition-colors glow-btn disabled:opacity-60 disabled:cursor-not-allowed
-                         flex items-center justify-center gap-2"
+              className="w-full h-14 bg-primary hover:bg-primary-hover text-white font-black uppercase tracking-widest rounded-2xl
+                         transition-all shadow-glow active:scale-95 disabled:opacity-60 flex items-center justify-center gap-3"
             >
-              {loading && <Loader2 size={16} className="animate-spin" />}
-              Masuk
-            </button>
+              {loading ? <Loader2 size={20} className="animate-spin" /> : 'Masuk Sekarang'}
+            </Button>
           </form>
+
+          {/* Demo Logins */}
+          <div className="mt-8 pt-8 border-t border-slate-50 grid grid-cols-2 gap-3 relative z-10">
+              <button 
+                onClick={() => handleDemoLogin('admin')}
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all active:scale-95"
+              >
+                <Sparkles size={14} className="text-amber-500" /> Admin Demo
+              </button>
+              <button 
+                onClick={() => handleDemoLogin('driver')}
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all active:scale-95"
+              >
+                <Sparkles size={14} className="text-blue-500" /> Supir Demo
+              </button>
+          </div>
 
           {/* Google OAuth */}
           {GOOGLE_ENABLED && (
             <>
-              <div className="relative my-5">
+              <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200" />
+                  <div className="w-full border-t border-slate-100" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="bg-white px-3 text-xs text-slate-400">atau</span>
+                  <span className="bg-white px-4 text-[10px] font-black uppercase tracking-widest text-slate-300">atau</span>
                 </div>
               </div>
               <button
@@ -168,8 +207,8 @@ export default function LoginForm({ next, errorParam }: Props) {
                 onClick={handleGoogle}
                 disabled={loading || googleLoading}
                 className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl
-                           py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors
-                           disabled:opacity-60 disabled:cursor-not-allowed"
+                           py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all
+                           disabled:opacity-60 active:scale-95"
               >
                 {googleLoading
                   ? <Loader2 size={18} className="animate-spin" />
@@ -180,23 +219,19 @@ export default function LoginForm({ next, errorParam }: Props) {
             </>
           )}
 
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-sm text-slate-500 mt-10 font-medium">
             Belum punya akun?{' '}
             <Link
               href={`/auth/register${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`}
-              className="font-semibold text-primary hover:underline"
+              className="font-black text-primary hover:underline underline-offset-4"
             >
               Daftar Gratis
             </Link>
           </p>
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-5">
-          Dengan masuk, Anda menyetujui{' '}
-          <Link href="/terms" className="hover:underline">Syarat &amp; Ketentuan</Link>
-          {' '}dan{' '}
-          <Link href="/privacy" className="hover:underline">Kebijakan Privasi</Link>{' '}
-          JaTravel.
+        <p className="text-center text-[10px] font-bold text-slate-400 mt-8 uppercase tracking-widest">
+          © 2026 JapanArena Corp · Standard Keamanan Global
         </p>
       </div>
     </div>
