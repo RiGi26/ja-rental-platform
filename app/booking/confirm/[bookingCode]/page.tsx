@@ -5,6 +5,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { createClient } from '@/lib/supabase/server'
 import ETicket from '@/components/ticket/ETicket'
 import { DownloadButtons } from '@/components/ticket/DownloadButtons'
+import GuestCTA from '@/components/account/GuestCTA'
 
 interface Props {
   params: Promise<{ bookingCode: string }>
@@ -99,32 +100,7 @@ export default async function ConfirmPage({ params }: Props) {
         <DownloadButtons bookingCode={bookingCode} />
 
         {/* Guest CTA — simpan tiket */}
-        {!isLoggedIn && (
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
-            <h3 className="font-display font-bold text-slate-800 mb-1">
-              Simpan tiket &amp; pantau perjalanan
-            </h3>
-            <p className="text-slate-500 text-sm mb-4">
-              Buat akun gratis untuk menyimpan riwayat booking dan notifikasi perjalanan.
-            </p>
-            <div className="flex gap-3">
-              <Link
-                href={`/auth/login?next=/booking/confirm/${bookingCode}`}
-                className="flex-1 text-center text-sm font-bold bg-primary text-white
-                           hover:bg-primary-hover px-4 py-2.5 rounded-xl transition-colors"
-              >
-                Daftar Gratis
-              </Link>
-              <Link
-                href={`/auth/login?next=/booking/confirm/${bookingCode}`}
-                className="flex-1 text-center text-sm font-semibold text-primary bg-white border
-                           border-primary/30 hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-colors"
-              >
-                Masuk
-              </Link>
-            </div>
-          </div>
-        )}
+        {!isLoggedIn && <GuestCTA bookingCode={bookingCode} />}
 
         {/* Tombol aksi */}
         <div className="flex flex-col sm:flex-row gap-3">

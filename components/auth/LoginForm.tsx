@@ -1,15 +1,12 @@
 'use client'
+
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Mail, Loader2, CheckCircle2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const GOOGLE_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
-
-interface Props {
-  next: string
-  errorParam?: string
-}
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
@@ -20,36 +17,38 @@ const GoogleIcon = () => (
   </svg>
 )
 
+interface Props {
+  next: string
+  errorParam?: string
+}
+
 export default function LoginForm({ next, errorParam }: Props) {
-  const [email,   setEmail]   = useState('')
-  const [loading, setLoading] = useState(false)
-  const [sent,    setSent]    = useState(false)
+  const router = useRouter()
+  const [email,         setEmail]         = useState('')
+  const [password,      setPassword]      = useState('')
+  const [showPassword,  setShowPassword]  = useState(false)
+  const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [error,   setError]   = useState<string | null>(
+  const [error,         setError]         = useState<string | null>(
     errorParam === 'auth_failed' ? 'Autentikasi gagal. Silakan coba lagi.' : null
   )
 
-  async function handleMagicLink(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
     const supabase = createClient()
-    const { error: authError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-      },
-    })
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      setError('Gagal mengirim link. Periksa email dan coba lagi.')
+      setError('Email atau password salah. Silakan coba lagi.')
       setLoading(false)
       return
     }
 
-    setSent(true)
-    setLoading(false)
+    router.push(next !== '/' ? next : '/account')
+    router.refresh()
   }
 
   async function handleGoogle() {
@@ -58,45 +57,12 @@ export default function LoginForm({ next, errorParam }: Props) {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next !== '/' ? next : '/account')}`,
       },
     })
     setGoogleLoading(false)
   }
 
-  /* ── Sukses: link terkirim ── */
-  if (sent) {
-    return (
-      <div className="min-h-screen bg-bg flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="bg-white rounded-2xl shadow-card p-8 text-center">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail size={32} className="text-primary" />
-            </div>
-            <h2 className="font-display font-bold text-xl text-slate-900 mb-2">
-              Cek Inbox Email Anda
-            </h2>
-            <p className="text-slate-500 text-sm mb-1">
-              Link masuk sudah dikirim ke
-            </p>
-            <p className="font-semibold text-slate-800 text-sm mb-5">{email}</p>
-            <p className="text-slate-400 text-xs mb-6">
-              Klik link di email tersebut untuk masuk dan melanjutkan pemesanan.
-              Link berlaku selama 10 menit.
-            </p>
-            <button
-              onClick={() => { setSent(false); setEmail('') }}
-              className="text-sm text-primary font-semibold hover:underline"
-            >
-              Ganti email
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  /* ── Form utama ── */
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
@@ -113,12 +79,12 @@ export default function LoginForm({ next, errorParam }: Props) {
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">
-          <div className="text-center mb-6">
+          <div className="mb-6">
             <h1 className="font-display font-bold text-xl text-slate-900 mb-1">
-              Masuk untuk Melanjutkan
+              Masuk ke JaTravel
             </h1>
             <p className="text-slate-500 text-sm">
-              Masukkan email Anda — kami kirim link masuk langsung ke inbox
+              Masukkan email dan password Anda
             </p>
           </div>
 
@@ -128,10 +94,10 @@ export default function LoginForm({ next, errorParam }: Props) {
             </div>
           )}
 
-          <form onSubmit={handleMagicLink} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                Alamat Email
+                Email
               </label>
               <input
                 type="email"
@@ -147,6 +113,33 @@ export default function LoginForm({ next, errorParam }: Props) {
               />
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-800
+                             placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40
+                             focus:border-primary transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={loading || googleLoading}
@@ -154,22 +147,10 @@ export default function LoginForm({ next, errorParam }: Props) {
                          transition-colors glow-btn disabled:opacity-60 disabled:cursor-not-allowed
                          flex items-center justify-center gap-2"
             >
-              {loading
-                ? <Loader2 size={16} className="animate-spin" />
-                : <Mail size={16} />
-              }
-              Kirim Link Masuk
+              {loading && <Loader2 size={16} className="animate-spin" />}
+              Masuk
             </button>
           </form>
-
-          {/* Penjelasan singkat */}
-          <div className="mt-4 bg-blue-50 rounded-xl px-4 py-3 flex gap-3">
-            <CheckCircle2 size={16} className="text-primary flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-blue-700">
-              Belum punya akun? Akun otomatis dibuat saat pertama kali masuk.
-              Tidak perlu password.
-            </p>
-          </div>
 
           {/* Google OAuth */}
           {GOOGLE_ENABLED && (
@@ -194,15 +175,25 @@ export default function LoginForm({ next, errorParam }: Props) {
                   ? <Loader2 size={18} className="animate-spin" />
                   : <GoogleIcon />
                 }
-                Lanjutkan dengan Google
+                Masuk dengan Google
               </button>
             </>
           )}
+
+          <p className="text-center text-sm text-slate-500 mt-6">
+            Belum punya akun?{' '}
+            <Link
+              href={`/auth/register${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`}
+              className="font-semibold text-primary hover:underline"
+            >
+              Daftar Gratis
+            </Link>
+          </p>
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-5">
           Dengan masuk, Anda menyetujui{' '}
-          <Link href="/terms" className="hover:underline">Syarat & Ketentuan</Link>
+          <Link href="/terms" className="hover:underline">Syarat &amp; Ketentuan</Link>
           {' '}dan{' '}
           <Link href="/privacy" className="hover:underline">Kebijakan Privasi</Link>{' '}
           JaTravel.

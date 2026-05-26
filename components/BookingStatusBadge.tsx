@@ -1,6 +1,7 @@
 import type { BookingStatus } from '@/lib/types'
 
 const labelMap: Record<BookingStatus, string> = {
+  pending:         'Menunggu Pembayaran',
   pending_payment: 'Menunggu Pembayaran',
   paid:            'Sudah Dibayar',
   confirmed:       'Dikonfirmasi',
@@ -13,6 +14,7 @@ const labelMap: Record<BookingStatus, string> = {
 }
 
 const classMap: Record<BookingStatus, string> = {
+  pending:         'badge-pending',
   pending_payment: 'badge-pending',
   paid:            'badge-confirmed',
   confirmed:       'badge-confirmed',

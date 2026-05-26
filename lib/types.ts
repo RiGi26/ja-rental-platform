@@ -100,6 +100,7 @@ export interface Driver {
 export type BookingType = 'travel' | 'rental'
 
 export type BookingStatus =
+  | 'pending'
   | 'pending_payment'
   | 'paid'
   | 'confirmed'
