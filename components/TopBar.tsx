@@ -1,12 +1,25 @@
 'use client'
-import { Menu } from 'lucide-react'
+
+import { Menu, Bell } from 'lucide-react'
 import { useLayoutStore } from '@/store/useLayoutStore'
 
-export default function TopBar() {
+interface Props {
+  userName?: string
+}
+
+export default function TopBar({ userName = 'Admin' }: Props) {
   const { toggleSidebar } = useLayoutStore()
 
+  const hour     = new Date().getHours()
+  const greeting = hour < 12 ? 'Selamat Pagi' : hour < 17 ? 'Selamat Siang' : 'Selamat Malam'
+  const initials = userName.slice(0, 2).toUpperCase()
+
   return (
-    <header className="h-16 bg-bg-card border-b border-slate-100 flex items-center justify-between px-4 md:px-6 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-white/80">
+    <header
+      className="h-16 bg-white border-b border-slate-100 flex items-center
+                 justify-between px-4 md:px-6 sticky top-0 z-30"
+      style={{ boxShadow: '0 2px 12px rgba(15,23,42,0.04)' }}
+    >
       <div className="flex items-center gap-3">
         <button
           onClick={toggleSidebar}
@@ -14,17 +27,25 @@ export default function TopBar() {
         >
           <Menu size={22} />
         </button>
+        <div className="hidden sm:block">
+          <p className="font-semibold text-slate-800 text-sm">
+            {greeting}, {userName}!
+          </p>
+          <p className="text-slate-400 text-xs">Admin Panel · JaTravel</p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="hidden sm:block text-right">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Administrator</p>
-        </div>
-        <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/20">
-          A
+      <div className="flex items-center gap-3">
+        <button className="relative p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+          <Bell size={19} />
+        </button>
+        <div
+          className="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm font-bold flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)' }}
+        >
+          {initials}
         </div>
       </div>
     </header>
   )
 }
-
