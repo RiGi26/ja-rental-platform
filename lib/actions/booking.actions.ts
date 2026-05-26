@@ -18,6 +18,15 @@ interface CreateBookingResult {
   error?: string
 }
 
+function generateBookingCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let code = 'JA-'
+  for (let i = 0; i < 7; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return code
+}
+
 export async function createBooking(data: CreateBookingInput): Promise<CreateBookingResult> {
   // Guest checkout: user boleh null, customer_id disimpan NULL di DB
   const authClient = await createClient()
@@ -62,14 +71,16 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
 
   console.log('[createBooking] STEP 3 — insert booking, customer_id:', user?.id ?? 'GUEST')
 
-  // STEP 3: Insert booking (booking_code di-generate trigger PostgreSQL)
-  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString() // 2 jam
+  // STEP 3: Insert booking
+  const bookingCode = generateBookingCode()
+  const expiresAt   = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString() // 2 jam
   const { data: booking, error: bookingError } = await supabase
     .from('bookings')
     .insert({
       tenant_id:        schedule.tenant_id,
       schedule_id:      data.scheduleId,
       customer_id:      user?.id ?? null,
+      booking_code:     bookingCode,
       type:             'travel',
       status:           'pending_payment',
       payment_status:   'pending',
