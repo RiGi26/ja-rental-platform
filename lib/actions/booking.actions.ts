@@ -116,10 +116,9 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     .insert(passengersData)
 
   if (paxError) {
-    // Rollback booking
     await supabase.from('bookings').delete().eq('id', booking.id)
-    console.error('[createBooking] passengers insert:', paxError.message)
-    return { error: 'Gagal menyimpan data penumpang. Silakan coba lagi.' }
+    console.error('[createBooking] passengers insert:', paxError.code, paxError.message)
+    return { error: `[PAX] ${paxError.code} — ${paxError.message}` }
   }
 
   // STEP 5: Insert payment record (non-fatal)
