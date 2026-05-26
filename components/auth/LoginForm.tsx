@@ -1,239 +1,132 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Loader2, ShieldCheck, ArrowLeft, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from 'sonner'
-import { triggerHaptic } from '@/lib/ux-utils'
 
-const GOOGLE_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
+export function LoginForm() {
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const next         = searchParams.get('next') ?? '/account'
 
-const GoogleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
-    <path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.2 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C33.8 6.5 29.2 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5c11 0 20.5-8 20.5-20.5 0-1.2-.1-2.3-.4-5z"/>
-    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.2 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C33.8 6.5 29.2 4.5 24 4.5c-7.7 0-14.3 4.4-17.7 10.2z"/>
-    <path fill="#4CAF50" d="M24 45.5c5.1 0 9.7-1.9 13.2-4.9l-6.1-5.2C29.3 36.8 26.8 37.5 24 37.5c-5.3 0-9.8-3.6-11.4-8.5l-6.5 5C9.5 41 16.3 45.5 24 45.5z"/>
-    <path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.4l6.1 5.2C41.1 35.1 44.5 30.5 44.5 25c0-1.2-.1-2.3-.9-5z"/>
-  </svg>
-)
+  const [email,        setEmail]        = useState('')
+  const [password,     setPassword]     = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading,      setLoading]      = useState(false)
+  const [error,        setError]        = useState<string | null>(null)
 
-interface Props {
-  next: string
-  errorParam?: string
-}
-
-export default function LoginForm({ next, errorParam }: Props) {
-  const router = useRouter()
-  const [email,         setEmail]         = useState('')
-  const [password,      setPassword]      = useState('')
-  const [showPassword,  setShowPassword]  = useState(false)
-  const [loading,       setLoading]       = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false)
-
-  async function handleLogin(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError(null)
     setLoading(true)
-    triggerHaptic()
 
     const supabase = createClient()
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      toast.error('Email atau password salah. Silakan coba lagi.')
+      setError('Email atau password salah. Silakan coba lagi.')
       setLoading(false)
       return
     }
 
-    toast.success('Berhasil masuk!')
     router.push(next !== '/' ? next : '/account')
     router.refresh()
   }
 
-  async function handleDemoLogin(role: 'admin' | 'driver') {
-    setLoading(true)
-    triggerHaptic()
-    
-    // Akun demo mapping
-    const demoEmail = role === 'admin' ? 'admin@demo.com' : 'driver@demo.com'
-    const demoPass  = 'Demo@1234'
-
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ 
-      email: demoEmail, 
-      password: demoPass 
-    })
-
-    if (error) {
-      toast.error('Gagal masuk ke akun demo. Silakan coba manual.')
-      setLoading(false)
-      return
-    }
-
-    toast.success(`Masuk sebagai ${role === 'admin' ? 'Administrator' : 'Supir'} Demo`)
-    router.push(role === 'admin' ? '/admin' : '/driver')
-    router.refresh()
-  }
-
-  async function handleGoogle() {
-    setGoogleLoading(true)
-    const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next !== '/' ? next : '/account')}`,
-      },
-    })
-    setGoogleLoading(false)
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 font-sans">
-      <div className="w-full max-w-md">
-
-        {/* Back Button */}
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-primary transition-colors mb-8 group"
-        >
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Kembali ke Beranda
-        </Link>
-
-        {/* Form Card */}
-        <div className="bg-white rounded-[32px] shadow-panel border border-slate-100 p-8 md:p-10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-[0.03]">
-             <ShieldCheck size={120} />
-          </div>
-
-          <div className="mb-8 relative z-10">
-            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-4">
-               <ShieldCheck size={24} />
-            </div>
-            <h1 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-1">
-              Masuk Portal.
-            </h1>
-            <p className="text-slate-500 text-sm font-medium">
-              Akses panel manajemen JapanArena Travel.
-            </p>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-5 relative z-10">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                autoFocus
-                autoComplete="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="nama@email.com"
-                className="h-12 px-4 rounded-xl border-slate-200 focus-visible:ring-primary/20 shadow-sm"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center px-1">
-                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</Label>
-                <Link href="/auth/forgot" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Lupa?</Link>
-              </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-12 px-4 pr-11 rounded-xl border-slate-200 focus-visible:ring-primary/20 shadow-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => { setShowPassword(v => !v); triggerHaptic(5); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading || googleLoading}
-              className="w-full h-14 bg-primary hover:bg-primary-hover text-white font-black uppercase tracking-widest rounded-2xl
-                         transition-all shadow-glow active:scale-95 disabled:opacity-60 flex items-center justify-center gap-3"
-            >
-              {loading ? <Loader2 size={20} className="animate-spin" /> : 'Masuk Sekarang'}
-            </Button>
-          </form>
-
-          {/* Demo Logins */}
-          <div className="mt-8 pt-8 border-t border-slate-50 grid grid-cols-2 gap-3 relative z-10">
-              <button 
-                onClick={() => handleDemoLogin('admin')}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all active:scale-95"
-              >
-                <Sparkles size={14} className="text-amber-500" /> Admin Demo
-              </button>
-              <button 
-                onClick={() => handleDemoLogin('driver')}
-                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all active:scale-95"
-              >
-                <Sparkles size={14} className="text-blue-500" /> Supir Demo
-              </button>
-          </div>
-
-          {/* Google OAuth */}
-          {GOOGLE_ENABLED && (
-            <>
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-100" />
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="bg-white px-4 text-[10px] font-black uppercase tracking-widest text-slate-300">atau</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleGoogle}
-                disabled={loading || googleLoading}
-                className="w-full flex items-center justify-center gap-3 border border-slate-200 rounded-xl
-                           py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all
-                           disabled:opacity-60 active:scale-95"
-              >
-                {googleLoading
-                  ? <Loader2 size={18} className="animate-spin" />
-                  : <GoogleIcon />
-                }
-                Masuk dengan Google
-              </button>
-            </>
-          )}
-
-          <p className="text-center text-sm text-slate-500 mt-10 font-medium">
-            Belum punya akun?{' '}
-            <Link
-              href={`/auth/register${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`}
-              className="font-black text-primary hover:underline underline-offset-4"
-            >
-              Daftar Gratis
-            </Link>
-          </p>
+    <div className="w-full max-w-md">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Masuk</h1>
+          <p className="text-gray-500 text-sm">Akses akun JaTravel Anda</p>
         </div>
 
-        <p className="text-center text-[10px] font-bold text-slate-400 mt-8 uppercase tracking-widest">
-          © 2026 JapanArena Corp · Standard Keamanan Global
+        {error && (
+          <div className="mb-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              required
+              autoFocus
+              autoComplete="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="nama@email.com"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800
+                         placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40
+                         focus:border-blue-500 transition-all"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <label htmlFor="password" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Password
+              </label>
+              <Link href="/auth/forgot" className="text-xs text-blue-600 hover:underline font-medium">
+                Lupa password?
+              </Link>
+            </div>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-20 text-sm text-gray-800
+                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40
+                           focus:border-blue-500 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400
+                           hover:text-gray-600 transition-colors px-1"
+                tabIndex={-1}
+              >
+                {showPassword ? 'Sembunyikan' : 'Tampilkan'}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl
+                       transition-colors disabled:opacity-60 disabled:cursor-not-allowed
+                       flex items-center justify-center gap-2 mt-2"
+          >
+            {loading ? 'Memuat...' : 'Masuk'}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Belum punya akun?{' '}
+          <Link
+            href={`/auth/register${next !== '/account' ? `?next=${encodeURIComponent(next)}` : ''}`}
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            Daftar Gratis
+          </Link>
         </p>
       </div>
+
+      <p className="text-center text-xs text-gray-400 mt-6">
+        © 2026 JapanArena Corp
+      </p>
     </div>
   )
 }

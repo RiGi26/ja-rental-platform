@@ -4,7 +4,8 @@ import { BookingConfirmationEmail } from '@/emails/BookingConfirmationEmail'
 import { PaymentReminderEmail } from '@/emails/PaymentReminderEmail'
 import { DepartureReminderEmail } from '@/emails/DepartureReminderEmail'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy so build-time static analysis doesn't throw when env var is absent
+function getResend() { return new Resend(process.env.RESEND_API_KEY ?? '') }
 
 const FROM = process.env.RESEND_DOMAIN_VERIFIED === 'true'
   ? 'noreply@japanarenacorp.com'
@@ -41,7 +42,7 @@ export async function sendBookingConfirmationEmail(params: {
   const invoiceUrl = `${APP_URL}/api/ticket/${params.bookingCode}/invoice`
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from:    FROM,
       to:      params.to,
       subject: `✅ Konfirmasi Booking ${params.bookingCode} — ${params.origin} → ${params.destination}`,
@@ -73,7 +74,7 @@ export async function sendPaymentReminderEmail(params: {
   const expiresAt  = formatDateTime(params.expiresAt)
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from:    FROM,
       to:      params.to,
       subject: `⏰ Segera bayar booking ${params.bookingCode} sebelum kedaluwarsa`,
@@ -105,7 +106,7 @@ export async function sendDepartureReminderEmail(params: {
   const departAt    = formatDateTime(params.departAt)
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from:    FROM,
       to:      params.to,
       subject: `🗓 Pengingat keberangkatan besok — ${params.origin} → ${params.destination}`,

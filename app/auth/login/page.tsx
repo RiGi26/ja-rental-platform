@@ -1,13 +1,12 @@
-import type { Metadata } from 'next'
-import LoginForm from '@/components/auth/LoginForm'
+import { Suspense } from 'react'
+import { LoginForm } from '@/components/auth/LoginForm'
 
-export const metadata: Metadata = { title: 'Masuk' }
-
-interface Props {
-  searchParams: Promise<{ next?: string; error?: string }>
-}
-
-export default async function LoginPage({ searchParams }: Props) {
-  const { next = '/', error } = await searchParams
-  return <LoginForm next={next} errorParam={error} />
+export default function LoginPage() {
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <Suspense>
+        <LoginForm />
+      </Suspense>
+    </main>
+  )
 }
