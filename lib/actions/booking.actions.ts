@@ -69,8 +69,6 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     return { error: 'Kursi tidak cukup, silakan pilih jadwal lain.' }
   }
 
-  console.log('[createBooking] STEP 3 — insert booking, customer_id:', user?.id ?? 'GUEST')
-
   // STEP 3: Insert booking
   const bookingCode = generateBookingCode()
   const expiresAt   = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString() // 2 jam
@@ -93,13 +91,9 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     .select('id, booking_code')
     .single()
 
-  console.log('[createBooking] STEP 3 result — booking:', booking, 'error:', bookingError)
-
   if (bookingError || !booking) {
-    const msg = bookingError?.message ?? 'booking row is null (insert may have succeeded but trigger/select failed)'
-    const code = bookingError?.code ?? ''
-    console.error('[createBooking] booking insert FAILED:', code, msg)
-    return { error: `[DB] ${code} — ${msg}` }
+    console.error('[createBooking] booking insert:', bookingError?.code, bookingError?.message)
+    return { error: 'Gagal membuat booking. Silakan coba lagi.' }
   }
 
   // STEP 4: Insert passengers
@@ -118,7 +112,7 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
   if (paxError) {
     await supabase.from('bookings').delete().eq('id', booking.id)
     console.error('[createBooking] passengers insert:', paxError.code, paxError.message)
-    return { error: `[PAX] ${paxError.code} — ${paxError.message}` }
+    return { error: 'Gagal menyimpan data penumpang. Silakan coba lagi.' }
   }
 
   // STEP 5: Insert payment record (non-fatal)
