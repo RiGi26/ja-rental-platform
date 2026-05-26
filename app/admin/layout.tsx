@@ -8,6 +8,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/admin')
 
+  // Role check: Only admin, owner, or superadmin can access this layout
+  const role = (user.app_metadata as { role?: string })?.role
+  const canAccess = ['admin', 'owner', 'superadmin'].includes(role ?? '')
+
+  if (!canAccess) {
+    redirect('/account?error=unauthorized')
+  }
+
   const displayName =
     (user.user_metadata as { full_name?: string })?.full_name ??
     user.email?.split('@')[0] ??
