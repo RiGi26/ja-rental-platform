@@ -75,6 +75,7 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
       payment_status:   'pending',
       seats:            data.seats,
       pickup_point_id:  data.pickupPointId,
+      total:            data.totalAmount,
       total_amount:     data.totalAmount,
       expires_at:       expiresAt,
     })
