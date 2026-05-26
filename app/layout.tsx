@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans, Geist } from 'next/font/google'
 import './globals.css'
 import { cn } from "@/lib/utils";
 import Header from '@/components/layout/Header'
+import { Toaster } from '@/components/ui/sonner'
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full bg-bg text-text font-sans">
         <Header />
         {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   )
