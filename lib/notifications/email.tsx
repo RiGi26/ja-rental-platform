@@ -5,7 +5,14 @@ import { PaymentReminderEmail } from '@/emails/PaymentReminderEmail'
 import { DepartureReminderEmail } from '@/emails/DepartureReminderEmail'
 
 // Lazy so build-time static analysis doesn't throw when env var is absent
-function getResend() { return new Resend(process.env.RESEND_API_KEY ?? '') }
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key) {
+    // Return a mock if key is missing (e.g. during build)
+    return { emails: { send: async () => ({ data: null, error: { message: 'Missing API Key' } }) } } as any
+  }
+  return new Resend(key)
+}
 
 const FROM = process.env.RESEND_DOMAIN_VERIFIED === 'true'
   ? 'noreply@japanarenacorp.com'
