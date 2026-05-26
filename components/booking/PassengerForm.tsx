@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useBookingStore } from '@/lib/store/booking.store'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 
 function validatePhone(phone: string): boolean {
   return /^(\+62|62|0)8[0-9]{8,11}$/.test(phone.replace(/[\s-]/g, ''))
@@ -54,7 +54,7 @@ export default function PassengerForm({ scheduleId }: Props) {
   async function handleFillSelf(checked: boolean) {
     setFillSelf(checked)
     if (!checked) return
-    const supabase = createClient()
+    const supabase = createCoreClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const name  = (user.user_metadata?.full_name as string)  ?? user.email?.split('@')[0] ?? ''

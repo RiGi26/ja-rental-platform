@@ -1,10 +1,10 @@
 import crypto from 'crypto'
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const supabase = createServiceClient()
+    const supabase = createRentalServiceClient()
 
     const isMock = body.mock === true
 

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useLayoutStore } from '@/store/useLayoutStore'
 import { X } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 
 const menuItems = [
   { icon: '📊', label: 'Dashboard',        href: '/admin' },
@@ -26,7 +26,7 @@ export default function AdminSidebar() {
   const { isSidebarOpen, setSidebarOpen } = useLayoutStore()
 
   async function handleSignOut() {
-    const supabase = createClient()
+    const supabase = createCoreClient()
     await supabase.auth.signOut()
     router.push('/')
     router.refresh()

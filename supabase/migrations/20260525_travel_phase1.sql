@@ -25,8 +25,10 @@ ALTER TABLE bookings ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pickup_point_id TEXT;
 ALTER TABLE bookings ADD COLUMN IF NOT EXISTS total_amount NUMERIC;
 
--- Sinkronkan status booking dengan PRD
+-- Drop constraint lama dulu, baru migrate data, baru add constraint baru
 ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_status_check;
+UPDATE bookings SET status = 'pending_payment' WHERE status = 'pending';
+UPDATE bookings SET status = 'completed'       WHERE status = 'done';
 ALTER TABLE bookings ADD CONSTRAINT bookings_status_check
   CHECK (status IN (
     'pending_payment','paid','confirmed',
@@ -35,6 +37,7 @@ ALTER TABLE bookings ADD CONSTRAINT bookings_status_check
   ));
 
 ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_payment_status_check;
+UPDATE bookings SET payment_status = 'failed' WHERE payment_status = 'expired';
 ALTER TABLE bookings ADD CONSTRAINT bookings_payment_status_check
   CHECK (payment_status IN ('pending','paid','failed','refunded'));
 
@@ -104,15 +107,15 @@ DROP POLICY IF EXISTS "public_schedules_read" ON schedules;
 -- Tenants
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "tenant_isolation" ON tenants
-  USING (id = (auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid);
+  USING (id = (auth.jwt() ->> 'tenant_id')::uuid);
 
 -- Routes: public read
 ALTER TABLE routes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "routes_public_read" ON routes FOR SELECT USING (true);
 CREATE POLICY "routes_admin_write" ON routes FOR ALL
   USING (
-    (auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid = tenant_id
-    AND (auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin','owner','superadmin')
+    (auth.jwt() ->> 'tenant_id')::uuid = tenant_id
+    AND (auth.jwt() ->> 'user_role') IN ('admin','owner','superadmin')
   );
 
 -- Schedules: public read
@@ -120,8 +123,8 @@ ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "schedules_public_read" ON schedules FOR SELECT USING (true);
 CREATE POLICY "schedules_admin_write" ON schedules FOR ALL
   USING (
-    (auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid = tenant_id
-    AND (auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin','owner','superadmin')
+    (auth.jwt() ->> 'tenant_id')::uuid = tenant_id
+    AND (auth.jwt() ->> 'user_role') IN ('admin','owner','superadmin')
   );
 
 -- Vehicles: public read, admin write
@@ -129,8 +132,8 @@ ALTER TABLE vehicles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "vehicles_public_read" ON vehicles FOR SELECT USING (true);
 CREATE POLICY "vehicles_admin_write" ON vehicles FOR ALL
   USING (
-    (auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid = tenant_id
-    AND (auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin','owner','superadmin')
+    (auth.jwt() ->> 'tenant_id')::uuid = tenant_id
+    AND (auth.jwt() ->> 'user_role') IN ('admin','owner','superadmin')
   );
 
 -- Bookings: customer hanya lihat booking sendiri
@@ -138,12 +141,12 @@ ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "bookings_read" ON bookings FOR SELECT
   USING (
     customer_id = auth.uid()
-    OR (auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid = tenant_id
+    OR (auth.jwt() ->> 'tenant_id')::uuid = tenant_id
   );
 CREATE POLICY "bookings_insert" ON bookings FOR INSERT
   WITH CHECK (auth.uid() IS NOT NULL);
 CREATE POLICY "bookings_update_admin" ON bookings FOR UPDATE
-  USING ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin','owner','superadmin'));
+  USING ((auth.jwt() ->> 'user_role') IN ('admin','owner','superadmin'));
 
 -- Passengers: ikut booking
 ALTER TABLE passengers ENABLE ROW LEVEL SECURITY;
@@ -152,7 +155,7 @@ CREATE POLICY "passengers_read" ON passengers FOR SELECT
     booking_id IN (
       SELECT id FROM bookings
       WHERE customer_id = auth.uid()
-        OR (auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid = tenant_id
+        OR (auth.jwt() ->> 'tenant_id')::uuid = tenant_id
     )
   );
 CREATE POLICY "passengers_insert" ON passengers FOR INSERT
@@ -161,7 +164,7 @@ CREATE POLICY "passengers_insert" ON passengers FOR INSERT
 -- Drivers
 ALTER TABLE drivers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "drivers_tenant_read" ON drivers FOR SELECT
-  USING ((auth.jwt() -> 'app_metadata' ->> 'tenant_id')::uuid = tenant_id);
+  USING ((auth.jwt() ->> 'tenant_id')::uuid = tenant_id);
 CREATE POLICY "drivers_self_read" ON drivers FOR SELECT
   USING (user_id = auth.uid());
 
@@ -172,7 +175,7 @@ CREATE POLICY "payments_read" ON payments FOR SELECT
     booking_id IN (
       SELECT id FROM bookings WHERE customer_id = auth.uid()
     )
-    OR (auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin','owner','superadmin')
+    OR (auth.jwt() ->> 'user_role') IN ('admin','owner','superadmin')
   );
 
 -- ── Indexes tambahan ──────────────────────────────────────────
@@ -233,12 +236,13 @@ ON CONFLICT (id) DO NOTHING;
 -- service_class: text default 'economy'
 -- is_cancelled:  boolean default false
 INSERT INTO schedules (
-  tenant_id, route_id, vehicle_id,
+  id, tenant_id, route_id, vehicle_id,
   depart_at, seats_total, seats_available,
   price, price_adult, price_child,
   pickup_points, status, service_class, is_cancelled
 )
 VALUES (
+  '00000000-0000-0000-0000-000000000301',
   '00000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000201',
   '00000000-0000-0000-0000-000000000101',
@@ -248,15 +252,17 @@ VALUES (
   '[{"id":"pp1","label":"Terminal Bekasi","address":"Jl. Hasibuan No.1, Bekasi","order":1},
     {"id":"pp2","label":"Pool Jakarta Timur","address":"Jl. Matraman No.7, Jakarta","order":2}]'::jsonb,
   'scheduled', 'economy', false
-);
+)
+ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO schedules (
-  tenant_id, route_id, vehicle_id,
+  id, tenant_id, route_id, vehicle_id,
   depart_at, seats_total, seats_available,
   price, price_adult, price_child,
   pickup_points, status, service_class, is_cancelled
 )
 VALUES (
+  '00000000-0000-0000-0000-000000000302',
   '00000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000201',
   '00000000-0000-0000-0000-000000000102',
@@ -265,15 +271,17 @@ VALUES (
   135000, 135000, 90000,
   '[{"id":"pp3","label":"Pool Kalimalang","address":"Jl. Kalimalang No.5, Bekasi","order":1}]'::jsonb,
   'scheduled', 'economy', false
-);
+)
+ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO schedules (
-  tenant_id, route_id, vehicle_id,
+  id, tenant_id, route_id, vehicle_id,
   depart_at, seats_total, seats_available,
   price, price_adult, price_child,
   pickup_points, status, service_class, is_cancelled
 )
 VALUES (
+  '00000000-0000-0000-0000-000000000303',
   '00000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000201',
   '00000000-0000-0000-0000-000000000101',
@@ -282,4 +290,5 @@ VALUES (
   150000, 150000, 100000,
   '[{"id":"pp1","label":"Terminal Bekasi","address":"Jl. Hasibuan No.1, Bekasi","order":1}]'::jsonb,
   'scheduled', 'economy', false
-);
+)
+ON CONFLICT (id) DO NOTHING;

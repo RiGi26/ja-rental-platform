@@ -1,11 +1,11 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import type { Schedule, TravelSearchParams, RentalSearchParams, VehicleType, VehicleWithPrice } from '@/lib/types'
 
 export async function searchSchedules(params: TravelSearchParams): Promise<Schedule[]> {
   // Service client: bypass RLS agar halaman search bisa diakses tanpa login
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   console.log('[searchSchedules] params:', params)
 
@@ -66,7 +66,7 @@ export async function searchSchedules(params: TravelSearchParams): Promise<Sched
 
 export async function getScheduleById(scheduleId: string): Promise<Schedule | null> {
   // Service client: booking page bisa diakses tanpa login
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   const { data, error } = await supabase
     .from('schedules')
@@ -101,7 +101,7 @@ const PRICE_BY_TYPE: Record<VehicleType, number> = {
 }
 
 export async function searchRentalVehicles(params: RentalSearchParams): Promise<VehicleWithPrice[]> {
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   console.log('[searchRentalVehicles] params:', params)
 
@@ -167,7 +167,7 @@ export async function searchRentalVehicles(params: RentalSearchParams): Promise<
 // Menggunakan service role agar bisa baca passengers tanpa RLS
 // Hanya mengembalikan seat_number (bukan data pribadi penumpang)
 export async function getOccupiedSeats(scheduleId: string): Promise<string[]> {
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   const { data: bookings, error } = await supabase
     .from('bookings')

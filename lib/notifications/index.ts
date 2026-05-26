@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/service'
+import { createCoreServiceClient, createRentalServiceClient } from '@/lib/supabase/service'
 import { sendWhatsApp } from './whatsapp'
 import { sendBookingConfirmationEmail, sendPaymentReminderEmail, sendDepartureReminderEmail } from './email'
 
@@ -24,7 +24,8 @@ interface PickupPointRow { id: string; label: string }
 // ── notifyPaymentSuccess ───────────────────────────────────────────────────────
 
 export async function notifyPaymentSuccess(bookingId: string): Promise<void> {
-  const supabase = createServiceClient()
+  const supabase     = createRentalServiceClient()
+  const coreSupabase = createCoreServiceClient()
 
   const { data: booking } = await supabase
     .from('bookings')
@@ -76,7 +77,7 @@ export async function notifyPaymentSuccess(bookingId: string): Promise<void> {
   const customerId = raw.customer_id as string | null
   if (customerId) {
     try {
-      const { data: { user } } = await supabase.auth.admin.getUserById(customerId)
+      const { data: { user } } = await coreSupabase.auth.admin.getUserById(customerId)
       if (user?.email) {
         await sendBookingConfirmationEmail({
           to:            user.email,
@@ -95,7 +96,7 @@ export async function notifyPaymentSuccess(bookingId: string): Promise<void> {
     }
   }
 
-  // Log to notifications table (non-fatal)
+  // Log to notifications table in Rental DB (non-fatal)
   try {
     await supabase.from('notifications').insert({
       tenant_id:      raw.tenant_id,
@@ -115,7 +116,8 @@ export async function notifyPaymentSuccess(bookingId: string): Promise<void> {
 // ── notifyPaymentReminder ──────────────────────────────────────────────────────
 
 export async function notifyPaymentReminder(bookingId: string): Promise<void> {
-  const supabase = createServiceClient()
+  const supabase     = createRentalServiceClient()
+  const coreSupabase = createCoreServiceClient()
 
   const { data: booking } = await supabase
     .from('bookings')
@@ -152,7 +154,7 @@ export async function notifyPaymentReminder(bookingId: string): Promise<void> {
   const customerId = raw.customer_id as string | null
   if (customerId && expiresAt) {
     try {
-      const { data: { user } } = await supabase.auth.admin.getUserById(customerId)
+      const { data: { user } } = await coreSupabase.auth.admin.getUserById(customerId)
       if (user?.email) {
         await sendPaymentReminderEmail({
           to:            user.email,
@@ -170,7 +172,8 @@ export async function notifyPaymentReminder(bookingId: string): Promise<void> {
 // ── notifyDepartureReminder ────────────────────────────────────────────────────
 
 export async function notifyDepartureReminder(bookingId: string): Promise<void> {
-  const supabase = createServiceClient()
+  const supabase     = createRentalServiceClient()
+  const coreSupabase = createCoreServiceClient()
 
   const { data: booking } = await supabase
     .from('bookings')
@@ -214,7 +217,7 @@ export async function notifyDepartureReminder(bookingId: string): Promise<void> 
   const customerId = raw.customer_id as string | null
   if (customerId) {
     try {
-      const { data: { user } } = await supabase.auth.admin.getUserById(customerId)
+      const { data: { user } } = await coreSupabase.auth.admin.getUserById(customerId)
       if (user?.email) {
         await sendDepartureReminderEmail({
           to:            user.email,

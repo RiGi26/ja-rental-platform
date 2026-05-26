@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -54,7 +54,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
+      const supabase = createCoreClient()
 
       // 1. Cek ketersediaan slug
       const { data: existing } = await supabase

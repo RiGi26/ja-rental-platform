@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Globe, LogIn, User, ChevronDown, LogOut, ClipboardList, Settings } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 
 interface UserData {
   id:        string
@@ -37,7 +37,7 @@ export default function HeaderClient({ initialUser }: Props) {
 
   async function handleSignOut() {
     setDropdownOpen(false)
-    const supabase = createClient()
+    const supabase = createCoreClient()
     await supabase.auth.signOut()
     router.push('/')
     router.refresh()

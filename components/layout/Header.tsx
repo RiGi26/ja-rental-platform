@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createCoreClient } from '@/lib/supabase/server'
 import HeaderClient from './HeaderClient'
 
 export default async function Header() {
-  const supabase = await createClient()
+  const supabase = await createCoreClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const userData = user

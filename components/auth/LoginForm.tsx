@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, Loader2, ShieldCheck, ArrowLeft, Sparkles } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -38,7 +38,7 @@ export function LoginForm() {
     setLoading(true)
     triggerHaptic()
 
-    const supabase = createClient()
+    const supabase = createCoreClient()
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
@@ -48,8 +48,9 @@ export function LoginForm() {
     }
 
     // Role check logic for smart redirect
-    const { data: { user } } = await supabase.auth.getUser()
-    const role = (user?.app_metadata as any)?.role
+    const { data: { session } } = await supabase.auth.getSession()
+    const claims = session?.access_token ? JSON.parse(atob(session.access_token.split('.')[1])) : {}
+    const role: string | undefined = claims.user_role
 
     toast.success('Login berhasil!')
     
@@ -71,10 +72,10 @@ export function LoginForm() {
     const demoEmail = role === 'admin' ? 'admin@demo.com' : 'driver@demo.com'
     const demoPass  = 'Demo@1234'
 
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ 
-      email: demoEmail, 
-      password: demoPass 
+    const supabase = createCoreClient()
+    const { error } = await supabase.auth.signInWithPassword({
+      email: demoEmail,
+      password: demoPass
     })
 
     if (error) {
@@ -90,7 +91,7 @@ export function LoginForm() {
 
   async function handleGoogle() {
     setGoogleLoading(true)
-    const supabase = createClient()
+    const supabase = createCoreClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

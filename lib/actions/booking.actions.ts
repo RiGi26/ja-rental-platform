@@ -1,7 +1,7 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/service'
+import { createCoreClient } from '@/lib/supabase/server'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 
 interface CreateBookingInput {
   scheduleId: string
@@ -29,11 +29,11 @@ function generateBookingCode(): string {
 
 export async function createBooking(data: CreateBookingInput): Promise<CreateBookingResult> {
   // Guest checkout: user boleh null, customer_id disimpan NULL di DB
-  const authClient = await createClient()
+  const authClient = await createCoreClient()
   const { data: { user } } = await authClient.auth.getUser()
 
   // Service client untuk bypass RLS pada operasi DB
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   // STEP 1: Validasi ulang kursi masih available (cegah race condition)
   const { data: activeBookings } = await supabase

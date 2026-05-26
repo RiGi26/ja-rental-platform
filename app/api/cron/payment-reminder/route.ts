@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { notifyPaymentReminder } from '@/lib/notifications'
 
 export async function GET(req: Request) {
@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const supabase   = createServiceClient()
+    const supabase   = createRentalServiceClient()
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
     const now        = new Date().toISOString()
 

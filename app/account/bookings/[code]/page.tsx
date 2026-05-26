@@ -1,8 +1,8 @@
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/service'
+import { createCoreClient } from '@/lib/supabase/server'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import BookingStatusBadge from '@/components/BookingStatusBadge'
 import { DownloadButtons } from '@/components/ticket/DownloadButtons'
 import { formatDate, formatTime, formatRupiah } from '@/lib/utils'
@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BookingDetailPage({ params }: Props) {
   const { code } = await params
 
-  const authClient = await createClient()
+  const authClient = await createCoreClient()
   const { data: { user } } = await authClient.auth.getUser()
   if (!user) redirect(`/auth/login?next=/account/bookings/${code}`)
 
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   const { data: booking } = await supabase
     .from('bookings')

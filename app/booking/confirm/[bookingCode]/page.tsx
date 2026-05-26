@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { createServiceClient } from '@/lib/supabase/service'
-import { createClient } from '@/lib/supabase/server'
+import { createRentalServiceClient } from '@/lib/supabase/service'
+import { createCoreClient } from '@/lib/supabase/server'
 import ETicket from '@/components/ticket/ETicket'
 import { DownloadButtons } from '@/components/ticket/DownloadButtons'
 import GuestCTA from '@/components/account/GuestCTA'
@@ -18,10 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ConfirmPage({ params }: Props) {
   const { bookingCode } = await params
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   // Cek sesi — halaman ini public, tapi kita tahu siapa yang login untuk tampilkan CTA
-  const authClient = await createClient()
+  const authClient = await createCoreClient()
   const { data: { user } } = await authClient.auth.getUser()
   const isLoggedIn = !!user
 

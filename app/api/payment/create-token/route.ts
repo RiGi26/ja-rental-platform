@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { createSnapToken, isMockMode } from '@/lib/midtrans'
 
 export async function POST(req: Request) {
@@ -8,7 +8,7 @@ export async function POST(req: Request) {
       return Response.json({ error: 'bookingCode diperlukan' }, { status: 400 })
     }
 
-    const supabase = createServiceClient()
+    const supabase = createRentalServiceClient()
 
     const { data: booking } = await supabase
       .from('bookings')

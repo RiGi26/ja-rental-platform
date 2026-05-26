@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { createCoreClient } from '@/lib/supabase/server'
 import ProfileForm from '@/components/account/ProfileForm'
 
 export const metadata: Metadata = { title: 'Edit Profil' }
 
 export default async function ProfilePage() {
-  const authClient = await createClient()
+  const authClient = await createCoreClient()
   const { data: { user } } = await authClient.auth.getUser()
   if (!user) redirect('/auth/login?next=/account/profile')
 

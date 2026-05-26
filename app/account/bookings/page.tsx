@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/service'
+import { createCoreClient } from '@/lib/supabase/server'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import BookingsListClient from './BookingsListClient'
 import type { BookingStatus } from '@/lib/types'
 
@@ -20,11 +20,11 @@ export interface BookingItem {
 }
 
 export default async function BookingsPage() {
-  const authClient = await createClient()
+  const authClient = await createCoreClient()
   const { data: { user } } = await authClient.auth.getUser()
   if (!user) redirect('/auth/login?next=/account/bookings')
 
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   const { data: rawBookings } = await supabase
     .from('bookings')

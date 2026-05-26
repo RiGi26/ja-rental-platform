@@ -1,15 +1,19 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createCoreClient } from '@/lib/supabase/server'
 import AdminSidebar from '@/components/AdminSidebar'
 import TopBar from '@/components/TopBar'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
+  const supabase = await createCoreClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/admin')
 
-  // Role check: Only admin, owner, or superadmin can access this layout
-  const role = (user.app_metadata as { role?: string })?.role
+  // Role from JWT custom claims (injected by Core DB hook)
+  const { data: { session } } = await supabase.auth.getSession()
+  const claims = session?.access_token
+    ? JSON.parse(atob(session.access_token.split('.')[1]))
+    : {}
+  const role = claims.user_role as string | undefined
   const canAccess = ['admin', 'owner', 'superadmin'].includes(role ?? '')
 
   if (!canAccess) {

@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/service'
+import { createCoreClient } from '@/lib/supabase/server'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import BookingCard from '@/components/account/BookingCard'
 import type { BookingStatus } from '@/lib/types'
 
@@ -29,14 +29,14 @@ export default async function AccountPage({
 }) {
   const { registered } = await searchParams
 
-  const authClient = await createClient()
+  const authClient = await createCoreClient()
   const { data: { user } } = await authClient.auth.getUser()
   if (!user) redirect('/auth/login?next=/account')
 
   const meta     = user.user_metadata as { full_name?: string }
   const firstName = (meta.full_name ?? user.email ?? 'Pengguna').split(' ')[0]
 
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   const { data: rawBookings } = await supabase
     .from('bookings')

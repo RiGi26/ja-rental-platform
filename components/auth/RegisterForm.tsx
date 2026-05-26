@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 import { claimGuestBooking } from '@/lib/actions/auth.actions'
 import { normalizePhone } from '@/lib/utils'
 
@@ -37,7 +37,7 @@ export default function RegisterForm({ next }: Props) {
     }
 
     setLoading(true)
-    const supabase = createClient()
+    const supabase = createCoreClient()
 
     const { data, error: authError } = await supabase.auth.signUp({
       email,

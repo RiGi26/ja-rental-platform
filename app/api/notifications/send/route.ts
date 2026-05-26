@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { notifyPaymentSuccess, notifyPaymentReminder, notifyDepartureReminder } from '@/lib/notifications'
 
 type NotifyEvent = 'payment_success' | 'payment_reminder' | 'departure_reminder'
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return Response.json({ error: 'bookingCode dan event diperlukan' }, { status: 400 })
     }
 
-    const supabase = createServiceClient()
+    const supabase = createRentalServiceClient()
     const { data: booking } = await supabase
       .from('bookings')
       .select('id')

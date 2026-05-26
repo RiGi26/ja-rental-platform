@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Loader2, CheckCircle2 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createCoreClient } from '@/lib/supabase/client'
 import { normalizePhone } from '@/lib/utils'
 import type { User } from '@supabase/supabase-js'
 
@@ -25,7 +25,7 @@ export default function ProfileForm({ user }: Props) {
     setError(null)
     setSuccess(false)
 
-    const supabase = createClient()
+    const supabase = createCoreClient()
     const { error: updateError } = await supabase.auth.updateUser({
       data: {
         full_name: name.trim(),

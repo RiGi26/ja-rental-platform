@@ -1,9 +1,9 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 
 export async function claimGuestBooking(bookingCode: string, userId: string) {
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
   const { error } = await supabase
     .from('bookings')
     .update({ customer_id: userId })

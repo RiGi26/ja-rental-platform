@@ -1,11 +1,25 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/service'
+import { createCoreClient } from '@/lib/supabase/server'
+import { createRentalServiceClient } from '@/lib/supabase/service'
+
+async function getActiveTenantId(): Promise<string | null> {
+  const supabase = await createCoreClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.access_token) return null
+  try {
+    const payload = JSON.parse(atob(session.access_token.split('.')[1]))
+    return payload.tenant_id ?? payload.linked_tenant_id ?? null
+  } catch { return null }
+}
 
 // ── Read helpers (called from Server Components) ────────────────────────────
 
 export async function getAdminDashboardStats() {
-  const supabase   = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return { bookingsToday: 0, revenueToday: 0, vehicles: { total: 0, active: 0 }, vehicleAlerts: [] }
+
+  const supabase   = createRentalServiceClient()
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
   const todayStr   = todayStart.toISOString()
@@ -21,11 +35,12 @@ export async function getAdminDashboardStats() {
     { data: alerts },
   ] = await Promise.all([
     supabase.from('bookings').select('*', { count: 'exact', head: true })
-      .gte('created_at', todayStr).eq('payment_status', 'paid'),
+      .eq('tenant_id', tenantId).gte('created_at', todayStr).eq('payment_status', 'paid'),
     supabase.from('payments').select('amount').eq('status', 'paid').gte('paid_at', todayStr),
-    supabase.from('vehicles').select('status'),
+    supabase.from('vehicles').select('status').eq('tenant_id', tenantId),
     supabase.from('vehicles')
       .select('id, plate, brand, model, next_service_date, stnk_expiry, kir_expiry, tax_expiry')
+      .eq('tenant_id', tenantId)
       .or([
         `next_service_date.lte.${thirtyStr}`,
         `stnk_expiry.lte.${thirtyStr}`,
@@ -34,9 +49,9 @@ export async function getAdminDashboardStats() {
       ].join(',')),
   ])
 
-  const revenueToday    = (payments ?? []).reduce((s, p) => s + (p.amount ?? 0), 0)
-  const totalVehicles   = vehicles?.length ?? 0
-  const activeVehicles  = (vehicles ?? []).filter(v => v.status === 'available' || v.status === 'on_trip').length
+  const revenueToday   = (payments ?? []).reduce((s, p) => s + (p.amount ?? 0), 0)
+  const totalVehicles  = vehicles?.length ?? 0
+  const activeVehicles = (vehicles ?? []).filter(v => v.status === 'available' || v.status === 'on_trip').length
 
   return {
     bookingsToday: bookingsToday ?? 0,
@@ -47,7 +62,9 @@ export async function getAdminDashboardStats() {
 }
 
 export async function getActiveSchedules() {
-  const supabase     = createServiceClient()
+  const tenantId     = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase     = createRentalServiceClient()
   const twelveHrsAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()
 
   const { data } = await supabase
@@ -58,6 +75,7 @@ export async function getActiveSchedules() {
       driver:drivers(name),
       route:routes(origin, destination)
     `)
+    .eq('tenant_id', tenantId)
     .in('status', ['boarding', 'on_trip', 'scheduled'])
     .gte('depart_at', twelveHrsAgo)
     .order('depart_at', { ascending: true })
@@ -67,12 +85,15 @@ export async function getActiveSchedules() {
 }
 
 export async function getVehicleReminders() {
-  const supabase  = createServiceClient()
+  const tenantId  = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase  = createRentalServiceClient()
   const thirtyStr = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   const { data } = await supabase
     .from('vehicles')
     .select('id, plate, brand, model, next_service_date, stnk_expiry, kir_expiry, tax_expiry')
+    .eq('tenant_id', tenantId)
     .or([
       `next_service_date.lte.${thirtyStr}`,
       `stnk_expiry.lte.${thirtyStr}`,
@@ -84,10 +105,13 @@ export async function getVehicleReminders() {
 }
 
 export async function getDriverPerformance() {
-  const supabase = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase = createRentalServiceClient()
   const { data } = await supabase
     .from('drivers')
     .select('id, name, phone, status, avg_rating')
+    .eq('tenant_id', tenantId)
     .eq('status', 'active')
     .order('avg_rating', { ascending: false })
     .limit(5)
@@ -96,7 +120,9 @@ export async function getDriverPerformance() {
 }
 
 export async function getAllBookings() {
-  const supabase = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase = createRentalServiceClient()
   const { data } = await supabase
     .from('bookings')
     .select(`
@@ -107,6 +133,7 @@ export async function getAllBookings() {
         route:routes(origin, destination)
       )
     `)
+    .eq('tenant_id', tenantId)
     .order('created_at', { ascending: false })
     .limit(100)
 
@@ -114,34 +141,45 @@ export async function getAllBookings() {
 }
 
 export async function getAllVehicles() {
-  const supabase = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase = createRentalServiceClient()
   const { data } = await supabase
     .from('vehicles')
     .select('*')
+    .eq('tenant_id', tenantId)
     .order('created_at', { ascending: false })
   return data ?? []
 }
 
 export async function getAllDrivers() {
-  const supabase = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase = createRentalServiceClient()
   const { data } = await supabase
     .from('drivers')
     .select('id, name, phone, license_no, status, avg_rating, user_id')
+    .eq('tenant_id', tenantId)
     .order('avg_rating', { ascending: false })
   return data ?? []
 }
 
 export async function getAllRoutes() {
-  const supabase = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase = createRentalServiceClient()
   const { data } = await supabase
     .from('routes')
     .select('*')
+    .eq('tenant_id', tenantId)
     .order('origin')
   return data ?? []
 }
 
 export async function getAllSchedules() {
-  const supabase = createServiceClient()
+  const tenantId     = await getActiveTenantId()
+  if (!tenantId) return []
+  const supabase     = createRentalServiceClient()
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
   const { data } = await supabase
     .from('schedules')
@@ -151,6 +189,7 @@ export async function getAllSchedules() {
       driver:drivers(id, name),
       route:routes(id, origin, destination)
     `)
+    .eq('tenant_id', tenantId)
     .gte('depart_at', sevenDaysAgo)
     .order('depart_at', { ascending: false })
     .limit(50)
@@ -158,8 +197,10 @@ export async function getAllSchedules() {
 }
 
 export async function getReportsData() {
-  const supabase   = createServiceClient()
-  const sixMonths  = new Date()
+  const tenantId  = await getActiveTenantId()
+  if (!tenantId) return { payments: [], bookings: [], vehicles: [] }
+  const supabase  = createRentalServiceClient()
+  const sixMonths = new Date()
   sixMonths.setMonth(sixMonths.getMonth() - 6)
 
   const [{ data: payments }, { data: bookings }, { data: vehicles }] = await Promise.all([
@@ -167,8 +208,8 @@ export async function getReportsData() {
     supabase.from('bookings').select(`
       status, payment_status, total_amount, created_at,
       schedule:schedules(route:routes(origin, destination))
-    `).gte('created_at', sixMonths.toISOString()),
-    supabase.from('vehicles').select('id, plate, brand, model, status'),
+    `).eq('tenant_id', tenantId).gte('created_at', sixMonths.toISOString()),
+    supabase.from('vehicles').select('id, plate, brand, model, status').eq('tenant_id', tenantId),
   ])
 
   return { payments: payments ?? [], bookings: bookings ?? [], vehicles: vehicles ?? [] }
@@ -177,15 +218,21 @@ export async function getReportsData() {
 // ── Mutations (Server Actions called from client) ───────────────────────────
 
 export async function confirmPaymentManual(bookingId: string) {
-  const supabase = createServiceClient()
-  await supabase.from('bookings').update({ status: 'confirmed', payment_status: 'paid' }).eq('id', bookingId)
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return { error: 'Unauthorized' }
+  const supabase = createRentalServiceClient()
+  await supabase.from('bookings').update({ status: 'confirmed', payment_status: 'paid' })
+    .eq('id', bookingId).eq('tenant_id', tenantId)
   await supabase.from('payments').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('booking_id', bookingId)
   return { success: true }
 }
 
 export async function cancelBookingAdmin(bookingId: string) {
-  const supabase = createServiceClient()
-  await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', bookingId)
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return { error: 'Unauthorized' }
+  const supabase = createRentalServiceClient()
+  await supabase.from('bookings').update({ status: 'cancelled' })
+    .eq('id', bookingId).eq('tenant_id', tenantId)
   return { success: true }
 }
 
@@ -197,12 +244,15 @@ export async function createSchedule(formData: {
   price:         number
   pickupPoints:  { label: string; address: string; order: number }[]
 }) {
-  const supabase = createServiceClient()
+  const tenantId = await getActiveTenantId()
+  if (!tenantId) return { error: 'Unauthorized' }
+  const supabase = createRentalServiceClient()
 
   const { data: vehicle } = await supabase
     .from('vehicles')
     .select('capacity, tenant_id')
     .eq('id', formData.vehicleId)
+    .eq('tenant_id', tenantId)
     .single()
 
   if (!vehicle) return { error: 'Kendaraan tidak ditemukan.' }
@@ -214,7 +264,7 @@ export async function createSchedule(formData: {
     .single()
 
   const { error } = await supabase.from('schedules').insert({
-    tenant_id:        vehicle.tenant_id,
+    tenant_id:        tenantId,
     route_id:         formData.routeId,
     vehicle_id:       formData.vehicleId,
     driver_id:        formData.driverId || null,

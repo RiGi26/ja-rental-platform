@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createRentalClient } from '@/lib/supabase/client'
 import { getOccupiedSeats } from '@/lib/actions/schedule.actions'
 import { generateSeatMap } from '@/lib/utils/seat'
 import SeatLegend from './SeatLegend'
@@ -49,7 +49,7 @@ export default function SeatPicker({
 
   // Realtime: subscribe ke perubahan bookings untuk jadwal ini
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createRentalClient()
     const channel = supabase
       .channel(`seats-${scheduleId}`)
       .on(

@@ -1,6 +1,6 @@
 import React from 'react'
 import { renderToBuffer } from '@react-pdf/renderer'
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { generateQRDataURL } from '@/lib/utils/qr'
 import { InvoicePDF } from '@/components/ticket/InvoicePDF'
 import type { PickupPoint } from '@/lib/types'
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { bookingCode } = await params
-    const supabase = createServiceClient()
+    const supabase = createRentalServiceClient()
 
     const { data: booking } = await supabase
       .from('bookings')

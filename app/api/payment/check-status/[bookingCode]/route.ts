@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { isMockMode } from '@/lib/midtrans'
 
 export async function GET(
@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ bookingCode: string }> }
 ) {
   const { bookingCode } = await params
-  const supabase = createServiceClient()
+  const supabase = createRentalServiceClient()
 
   const { data: booking } = await supabase
     .from('bookings')

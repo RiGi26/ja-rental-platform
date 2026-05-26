@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { notifyDepartureReminder } from '@/lib/notifications'
 
 export const dynamic = 'force-dynamic'
@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const supabase = createServiceClient()
+    const supabase = createRentalServiceClient()
 
     // Bookings yang berangkat antara 20 jam dan 28 jam dari sekarang (window H-1)
     const from = new Date(Date.now() + 20 * 60 * 60 * 1000).toISOString()
