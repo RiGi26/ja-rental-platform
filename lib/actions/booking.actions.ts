@@ -82,7 +82,7 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
       customer_id:      user?.id ?? null,
       booking_code:     bookingCode,
       type:             'travel',
-      status:           'pending_payment',
+      status:           'pending',
       payment_status:   'pending',
       seats:            data.seats,
       pickup_point_id:  data.pickupPointId,
