@@ -19,12 +19,9 @@ interface CreateBookingResult {
 }
 
 export async function createBooking(data: CreateBookingInput): Promise<CreateBookingResult> {
-  // Verifikasi user sudah login
+  // Guest checkout: user boleh null, customer_id disimpan NULL di DB
   const authClient = await createClient()
   const { data: { user } } = await authClient.auth.getUser()
-  if (!user) {
-    return { error: 'Anda perlu login untuk melanjutkan.' }
-  }
 
   // Service client untuk bypass RLS pada operasi DB
   const supabase = createServiceClient()
@@ -70,7 +67,7 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     .insert({
       tenant_id:        schedule.tenant_id,
       schedule_id:      data.scheduleId,
-      customer_id:      user.id,
+      customer_id:      user?.id ?? null,
       type:             'travel',
       status:           'pending_payment',
       payment_status:   'pending',

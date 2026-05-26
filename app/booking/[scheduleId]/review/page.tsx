@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useBookingStore } from '@/lib/store/booking.store'
 import { getScheduleById } from '@/lib/actions/schedule.actions'
-import { createClient } from '@/lib/supabase/client'
 import BookingSteps from '@/components/booking/BookingSteps'
 import ScheduleSummary from '@/components/booking/ScheduleSummary'
 import BookingReview from '@/components/booking/BookingReview'
@@ -42,14 +41,6 @@ export default function ReviewPage() {
         (hasPickupPoints && !pickupPointId)
       ) {
         router.replace(`/booking/${scheduleId}`)
-        return
-      }
-
-      // Cek autentikasi
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push(`/auth/login?next=/booking/${scheduleId}/review`)
         return
       }
 

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createServiceClient } from '@/lib/supabase/service'
+import { createClient } from '@/lib/supabase/server'
 import ETicket from '@/components/ticket/ETicket'
 
 interface Props {
@@ -16,6 +17,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ConfirmPage({ params }: Props) {
   const { bookingCode } = await params
   const supabase = createServiceClient()
+
+  // Cek sesi — halaman ini public, tapi kita tahu siapa yang login untuk tampilkan CTA
+  const authClient = await createClient()
+  const { data: { user } } = await authClient.auth.getUser()
+  const isLoggedIn = !!user
 
   const { data: booking } = await supabase
     .from('bookings')
@@ -88,6 +94,34 @@ export default async function ConfirmPage({ params }: Props) {
           pickupPoints={pickupPoints}
         />
 
+        {/* Guest CTA — simpan tiket */}
+        {!isLoggedIn && (
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+            <h3 className="font-display font-bold text-slate-800 mb-1">
+              Simpan tiket &amp; pantau perjalanan
+            </h3>
+            <p className="text-slate-500 text-sm mb-4">
+              Buat akun gratis untuk menyimpan riwayat booking dan notifikasi perjalanan.
+            </p>
+            <div className="flex gap-3">
+              <Link
+                href={`/auth/login?next=/booking/confirm/${bookingCode}`}
+                className="flex-1 text-center text-sm font-bold bg-primary text-white
+                           hover:bg-primary-hover px-4 py-2.5 rounded-xl transition-colors"
+              >
+                Daftar Gratis
+              </Link>
+              <Link
+                href={`/auth/login?next=/booking/confirm/${bookingCode}`}
+                className="flex-1 text-center text-sm font-semibold text-primary bg-white border
+                           border-primary/30 hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-colors"
+              >
+                Masuk
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Tombol aksi */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
@@ -97,13 +131,15 @@ export default async function ConfirmPage({ params }: Props) {
           >
             ← Kembali ke Beranda
           </Link>
-          <Link
-            href="/account"
-            className="flex-1 text-center text-sm font-semibold bg-primary text-white
-                       hover:bg-primary-hover px-5 py-3 rounded-xl transition-colors shadow-glow"
-          >
-            Lihat Riwayat Booking →
-          </Link>
+          {isLoggedIn && (
+            <Link
+              href="/account"
+              className="flex-1 text-center text-sm font-semibold bg-primary text-white
+                         hover:bg-primary-hover px-5 py-3 rounded-xl transition-colors shadow-glow"
+            >
+              Lihat Riwayat Booking →
+            </Link>
+          )}
         </div>
       </div>
     </main>
