@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { createServiceClient } from '@/lib/supabase/service'
 import { createClient } from '@/lib/supabase/server'
 import ETicket from '@/components/ticket/ETicket'
+import { DownloadButtons } from '@/components/ticket/DownloadButtons'
 
 interface Props {
   params: Promise<{ bookingCode: string }>
@@ -93,6 +94,9 @@ export default async function ConfirmPage({ params }: Props) {
           passengers={passengers}
           pickupPoints={pickupPoints}
         />
+
+        {/* Download buttons */}
+        <DownloadButtons bookingCode={bookingCode} />
 
         {/* Guest CTA — simpan tiket */}
         {!isLoggedIn && (
