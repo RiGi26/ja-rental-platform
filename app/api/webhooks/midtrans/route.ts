@@ -81,7 +81,10 @@ export async function POST(req: Request) {
 
     if (newPaymentStatus === 'paid') {
       console.log(`✅ Booking ${orderId} PAID — Rp ${booking.total_amount}`)
-      // TODO Phase 8: sendWhatsApp(), sendEmail(), generateETicket()
+      // Non-blocking — jangan tunggu notifikasi selesai
+      import('@/lib/notifications')
+        .then(({ notifyPaymentSuccess }) => notifyPaymentSuccess(booking.id))
+        .catch(err => console.error('[NOTIFY ERROR]', err))
     }
 
     return Response.json({ ok: true })
