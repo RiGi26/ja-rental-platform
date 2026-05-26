@@ -117,7 +117,7 @@ export interface Booking {
   tenant_id: string
   schedule_id: string | null
   vehicle_id: string | null
-  customer_id: string
+  customer_id: string | null
   type: BookingType
   status: BookingStatus
   payment_status: PaymentStatus

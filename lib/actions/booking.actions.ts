@@ -80,8 +80,13 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     .single()
 
   if (bookingError || !booking) {
-    console.error('[createBooking] booking insert:', bookingError?.message)
-    return { error: 'Gagal membuat booking. Silakan coba lagi.' }
+    const msg = bookingError?.message ?? 'unknown'
+    console.error('[createBooking] booking insert:', msg)
+    return {
+      error: process.env.NODE_ENV === 'development'
+        ? `Gagal membuat booking: ${msg}`
+        : 'Gagal membuat booking. Silakan coba lagi.',
+    }
   }
 
   // STEP 4: Insert passengers
