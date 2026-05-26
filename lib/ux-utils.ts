@@ -1,9 +1,10 @@
 /**
- * Trigger a short haptic vibration on supported mobile browsers.
- * Safe to call on desktop — navigator.vibrate is a no-op there.
+ * High-performance UI Utilities for Japan Arena SaaS
+ * Fokus pada performa dan user experience tactile.
  */
-export function triggerHaptic(ms = 10) {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(ms)
+
+export function triggerHaptic(duration = 10) {
+  if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+    window.navigator.vibrate(duration)
   }
 }
