@@ -60,6 +60,8 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     return { error: 'Kursi tidak cukup, silakan pilih jadwal lain.' }
   }
 
+  console.log('[createBooking] STEP 3 — insert booking, customer_id:', user?.id ?? 'GUEST')
+
   // STEP 3: Insert booking (booking_code di-generate trigger PostgreSQL)
   const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString() // 2 jam
   const { data: booking, error: bookingError } = await supabase
@@ -79,14 +81,13 @@ export async function createBooking(data: CreateBookingInput): Promise<CreateBoo
     .select('id, booking_code')
     .single()
 
+  console.log('[createBooking] STEP 3 result — booking:', booking, 'error:', bookingError)
+
   if (bookingError || !booking) {
-    const msg = bookingError?.message ?? 'unknown'
-    console.error('[createBooking] booking insert:', msg)
-    return {
-      error: process.env.NODE_ENV === 'development'
-        ? `Gagal membuat booking: ${msg}`
-        : 'Gagal membuat booking. Silakan coba lagi.',
-    }
+    const msg = bookingError?.message ?? 'booking row is null (insert may have succeeded but trigger/select failed)'
+    const code = bookingError?.code ?? ''
+    console.error('[createBooking] booking insert FAILED:', code, msg)
+    return { error: `[DB] ${code} — ${msg}` }
   }
 
   // STEP 4: Insert passengers
