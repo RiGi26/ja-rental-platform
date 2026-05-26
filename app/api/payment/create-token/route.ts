@@ -28,7 +28,8 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Booking sudah dibayar' }, { status: 400 })
     }
 
-    if (new Date(booking.expires_at) < new Date()) {
+    const expiresAt = (booking as Record<string, unknown>).expires_at as string | null
+    if (expiresAt && new Date(expiresAt) < new Date()) {
       await supabase
         .from('bookings')
         .update({ status: 'expired', payment_status: 'failed' })
@@ -36,32 +37,39 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Booking sudah kadaluarsa' }, { status: 410 })
     }
 
-    const passengers = (booking.passengers ?? []) as { name: string; phone: string }[]
-    const passenger  = passengers[0]
-    const route      = (booking.schedule as { route?: { origin: string; destination: string } } | null)?.route
-    const origin      = route?.origin      ?? 'Asal'
-    const destination = route?.destination ?? 'Tujuan'
+    const passengers     = (booking.passengers ?? []) as { name: string; phone: string }[]
+    const passenger      = passengers[0]
+    const route          = (booking.schedule as { route?: { origin: string; destination: string } } | null)?.route
+    const origin         = route?.origin      ?? 'Asal'
+    const destination    = route?.destination ?? 'Tujuan'
     const passengerCount = passengers.length || 1
-    const pricePerPax    = Math.round((booking.total_amount as number) / passengerCount)
+
+    // Fallback: DB memakai kolom "total" atau "total_amount"
+    const raw    = booking as Record<string, unknown>
+    const amount = (raw.total_amount as number | null) ?? (raw.total as number | null) ?? 0
+    const pricePerPax = Math.round(amount / passengerCount)
+
+    console.log('[create-token] isMockMode:', isMockMode, '| amount:', amount, '| pax:', passengerCount)
 
     const { token, redirectUrl } = await createSnapToken({
       orderId:       bookingCode,
-      amount:        booking.total_amount as number,
+      amount,
       customerName:  passenger?.name  ?? 'Customer',
       customerEmail: 'customer@japanarenatour.com',
       customerPhone: passenger?.phone ?? '08000000000',
       items: [{
         id:       `ticket-${bookingCode}`,
-        name:     `Tiket Travel ${origin} → ${destination}`,
+        name:     `Tiket Travel ${origin} - ${destination}`,
         price:    pricePerPax,
         quantity: passengerCount,
       }],
     })
 
-    // Simpan snap_token dan midtrans_ref ke tabel payments
+    console.log('[create-token] token ok:', token)
+
     await supabase
       .from('payments')
-      .update({ snap_token: token, midtrans_ref: bookingCode })
+      .update({ snap_token: token })
       .eq('booking_id', booking.id)
 
     return Response.json({
@@ -70,11 +78,12 @@ export async function POST(req: Request) {
       clientKey:  process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? '',
       isMockMode,
       bookingCode,
-      amount:     booking.total_amount,
-      expiresAt:  booking.expires_at,
+      amount,
+      expiresAt,
     })
   } catch (err) {
-    console.error('[create-token]', err)
-    return Response.json({ error: 'Gagal membuat token pembayaran' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[create-token] THREW:', msg)
+    return Response.json({ error: `[create-token] ${msg}` }, { status: 500 })
   }
 }
