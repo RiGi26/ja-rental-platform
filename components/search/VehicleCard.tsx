@@ -43,6 +43,7 @@ export default function VehicleCard({ vehicle, start, end, withDriver }: Props) 
             width={400}
             height={176}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl">🚗</div>

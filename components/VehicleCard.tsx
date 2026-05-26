@@ -14,7 +14,7 @@ export default function VehicleCard({ vehicle, pricePerDay, available }: Props) 
     <div className="bg-bg-card rounded-2xl shadow-card overflow-hidden hover:shadow-panel transition-shadow">
       <div className="relative h-48 bg-slate-100">
         {vehicle.photos[0] && (
-          <Image src={vehicle.photos[0]} alt={vehicle.plate} fill className="object-cover" />
+          <Image src={vehicle.photos[0]} alt={vehicle.plate} fill className="object-cover" unoptimized />
         )}
         <span className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full ${available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
           {available ? 'Tersedia' : 'Tidak Tersedia'}

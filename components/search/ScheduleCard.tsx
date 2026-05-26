@@ -34,7 +34,7 @@ export default function ScheduleCard({ schedule, passengers }: Props) {
       <div className="flex items-center gap-3 mb-4">
         <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
           {photo ? (
-            <Image src={photo} alt={vehicle?.model ?? ''} width={48} height={48} className="object-cover w-full h-full" />
+            <Image src={photo} alt={vehicle?.model ?? ''} width={48} height={48} className="object-cover w-full h-full" unoptimized />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-xl">🚌</div>
           )}
