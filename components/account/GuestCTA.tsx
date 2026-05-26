@@ -45,7 +45,7 @@ export default function GuestCTA({ bookingCode }: Props) {
           className="flex-1 text-center text-sm font-semibold text-primary bg-white border
                      border-primary/30 hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-colors"
         >
-          Masuk
+          Login
         </Link>
       </div>
     </div>

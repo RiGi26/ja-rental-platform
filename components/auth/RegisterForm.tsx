@@ -215,12 +215,12 @@ export default function RegisterForm({ next }: Props) {
 
           <p className="text-center text-sm text-slate-500 mt-6">
             Sudah punya akun?{' '}
-            <Link
-              href={`/auth/login${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`}
-              className="font-semibold text-primary hover:underline"
-            >
-              Masuk
-            </Link>
+                        <Link
+                          href={`/auth/login${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`}
+                          className="font-semibold text-primary hover:underline"
+                        >
+                          Login
+                        </Link>
           </p>
         </div>
       </div>

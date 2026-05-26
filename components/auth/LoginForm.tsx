@@ -51,7 +51,7 @@ export function LoginForm() {
     const { data: { user } } = await supabase.auth.getUser()
     const role = (user?.app_metadata as any)?.role
 
-    toast.success('Berhasil masuk!')
+    toast.success('Login berhasil!')
     
     if (next !== '/') {
       router.push(next)
@@ -78,12 +78,12 @@ export function LoginForm() {
     })
 
     if (error) {
-      toast.error('Gagal masuk ke akun demo. Silakan coba manual.')
+      toast.error('Gagal login ke akun demo. Silakan coba manual.')
       setLoading(false)
       return
     }
 
-    toast.success(`Masuk sebagai ${role === 'admin' ? 'Administrator' : 'Supir'} Demo`)
+    toast.success(`Login sebagai ${role === 'admin' ? 'Administrator' : 'Supir'} Demo`)
     router.push(role === 'admin' ? '/admin' : '/driver')
     router.refresh()
   }
@@ -121,7 +121,7 @@ export function LoginForm() {
               <ShieldCheck size={24} />
           </div>
           <h1 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-1">
-            Masuk Portal.
+            Portal Login.
           </h1>
           <p className="text-slate-500 text-sm font-medium">
             Akses panel manajemen JapanArena Travel.
@@ -177,7 +177,7 @@ export function LoginForm() {
             className="w-full h-14 bg-primary hover:bg-primary-hover text-white font-black uppercase tracking-widest rounded-2xl
                         transition-all shadow-glow active:scale-95 disabled:opacity-60 flex items-center justify-center gap-3"
           >
-            {loading ? <Loader2 size={20} className="animate-spin" /> : 'Masuk Sekarang'}
+            {loading ? <Loader2 size={20} className="animate-spin" /> : 'Login Sekarang'}
           </Button>
         </form>
 
@@ -220,7 +220,7 @@ export function LoginForm() {
                 ? <Loader2 size={18} className="animate-spin" />
                 : <GoogleIcon />
               }
-              Masuk dengan Google
+              Login dengan Google
             </button>
           </>
         )}

@@ -290,7 +290,7 @@ export default function RegisterPage() {
              <span className="text-xs font-bold text-slate-500">Free 14-Day Trial</span>
            </div>
            <div className="flex items-center gap-2 text-xs text-slate-400">
-             Sudah punya akun? <Link href="/auth/login" className="text-primary font-bold hover:underline">Masuk Portal</Link>
+             Sudah punya akun? <Link href="/auth/login" className="text-primary font-bold hover:underline">Login Portal</Link>
            </div>
         </div>
       </div>

@@ -152,20 +152,20 @@ export default function HeaderClient({ initialUser }: Props) {
                                  hover:bg-red-50 transition-colors"
                     >
                       <LogOut size={15} />
-                      Keluar
+                      Logout
                     </button>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            /* Guest: Masuk + Daftar */
+            /* Guest: Login + Daftar */
             <>
               <Link
                 href="/auth/login"
                 className="hidden sm:flex px-4 py-2 text-sm font-medium hover:bg-slate-100 rounded-lg transition-colors"
               >
-                Masuk
+                Login
               </Link>
               <Link
                 href="/auth/register"
