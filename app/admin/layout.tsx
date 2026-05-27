@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createCoreClient } from '@/lib/supabase/server'
+import { createCoreServiceClient } from '@/lib/supabase/service'
 import AdminSidebar from '@/components/AdminSidebar'
 import TopBar from '@/components/TopBar'
 
@@ -13,10 +14,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const claims = session?.access_token
     ? JSON.parse(atob(session.access_token.split('.')[1]))
     : {}
-  const role = claims.user_role as string | undefined
-  const canAccess = ['admin', 'owner', 'superadmin'].includes(role ?? '')
+  let role = claims.user_role as string | undefined
 
-  if (!canAccess) {
+  // Fallback: query Core DB langsung jika JWT hook belum aktif atau user login
+  // sebelum hook di-register (token lama belum punya claims)
+  if (!role) {
+    const db = createCoreServiceClient()
+    const { data: member } = await db
+      .from('tenant_members')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+    role = member?.role ?? undefined
+  }
+
+  if (!['admin', 'owner', 'superadmin'].includes(role ?? '')) {
     redirect('/account?error=unauthorized')
   }
 
