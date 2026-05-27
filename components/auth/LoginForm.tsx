@@ -68,25 +68,22 @@ export function LoginForm() {
   async function handleDemoLogin(role: 'admin' | 'driver') {
     setLoading(true)
     triggerHaptic()
-    
-    const demoEmail = role === 'admin' ? 'admin@demo.com' : 'driver@demo.com'
-    const demoPass  = 'Demo@1234'
 
-    const supabase = createCoreClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email: demoEmail,
-      password: demoPass
+    const res = await fetch('/api/auth/demo-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role }),
     })
+    const data = await res.json()
 
-    if (error) {
+    if (!res.ok) {
       toast.error('Gagal login ke akun demo. Silakan coba manual.')
       setLoading(false)
       return
     }
 
     toast.success(`Login sebagai ${role === 'admin' ? 'Administrator' : 'Supir'} Demo`)
-    router.push(role === 'admin' ? '/admin' : '/driver')
-    router.refresh()
+    window.location.href = data.redirectTo
   }
 
   async function handleGoogle() {
