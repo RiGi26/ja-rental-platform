@@ -51,9 +51,9 @@ export default function TrackingTable({ schedules }: Props) {
             const cfg = statusConfig[s.status] ?? statusConfig.scheduled
             const seatsTaken = s.seats_total - s.seats_available
             return (
-              <tr key={s.id} className="border-b border-slate-50 last:border-0">
+              <tr key={s.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors group">
                 <td className="py-3.5 pr-4">
-                  <p className="font-bold text-slate-800">{s.vehicle?.plate ?? '-'}</p>
+                  <p className="font-bold text-slate-800 group-hover:text-primary transition-colors">{s.vehicle?.plate ?? '-'}</p>
                   <p className="text-xs text-slate-400">{s.vehicle?.brand} {s.vehicle?.model}</p>
                 </td>
                 <td className="py-3.5 pr-4">
@@ -63,7 +63,7 @@ export default function TrackingTable({ schedules }: Props) {
                   <p className="font-medium text-slate-800">
                     {s.route?.origin ?? '-'} → {s.route?.destination ?? '-'}
                   </p>
-                  <p className="text-xs text-slate-400">{seatsTaken}/{s.seats_total} penumpang</p>
+                  <p className="text-xs text-slate-400 tabular-nums">{seatsTaken}/{s.seats_total} penumpang</p>
                 </td>
                 <td className="py-3.5 pr-4">
                   <p className="font-medium text-slate-700">{formatTime(s.depart_at)}</p>

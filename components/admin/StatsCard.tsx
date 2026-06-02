@@ -23,8 +23,8 @@ export default function StatsCard({ label, value, subtext, icon, color }: Props)
     >
       <div className="flex items-start justify-between">
         <div
-          className="w-[52px] h-[52px] flex items-center justify-center text-2xl flex-shrink-0"
-          style={{ background: bg, borderRadius: 16, color: text }}
+          className="w-[52px] h-[52px] flex items-center justify-center text-2xl flex-shrink-0 transition-transform hover:scale-105"
+          style={{ background: bg, borderRadius: 12, color: text }}
         >
           {icon}
         </div>
@@ -34,8 +34,8 @@ export default function StatsCard({ label, value, subtext, icon, color }: Props)
       </div>
       <div>
         <p
-          className="font-extrabold leading-none mb-1"
-          style={{ fontSize: 36, color: '#1e293b' }}
+          className="font-extrabold leading-none mb-1 tabular-nums"
+          style={{ fontSize: 36, color: '#1e293b', letterSpacing: '-0.02em' }}
         >
           {value}
         </p>

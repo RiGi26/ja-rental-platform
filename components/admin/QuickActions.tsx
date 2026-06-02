@@ -29,8 +29,8 @@ export default function QuickActions() {
             href={a.href}
             className="flex items-center justify-center text-center text-sm font-bold
                        py-[18px] px-4 transition-all duration-200 hover:-translate-y-0.5
-                       active:translate-y-0"
-            style={{ background: bg, color: text, borderRadius: 18 }}
+                       active:scale-[0.96] shadow-sm hover:shadow-md"
+            style={{ background: bg, color: text, borderRadius: 12 }}
           >
             {a.label}
           </Link>
