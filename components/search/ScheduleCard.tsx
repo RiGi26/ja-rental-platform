@@ -111,16 +111,11 @@ export default function ScheduleCard({ schedule, passengers }: Props) {
         </div>
         <button
           onClick={e => { e.stopPropagation(); handleSelect() }}
-          className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl
-                     hover:bg-primary-hover transition-colors group-hover:shadow-glow"
+          className="bg-primary text-white text-sm font-bold px-5 py-2.5 rounded-xl
+                     hover:bg-primary-hover active:scale-[0.96] transition-all duration-200 group-hover:shadow-glow"
         >
-          Pilih →
+          Pilih Kursi →
         </button>
-      </div>
-    </div>
-  )
-}
-on>
       </div>
     </div>
   )
