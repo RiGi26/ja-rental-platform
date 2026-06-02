@@ -21,7 +21,7 @@ export function DepartureReminderEmail(props: Props): React.ReactElement {
 
           {/* Header */}
           <div style={{ backgroundColor: '#1A56DB', borderRadius: '12px 12px 0 0', padding: '24px 32px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 'bold', color: '#FFFFFF' }}>🚌 JaTravel</div>
+            <div style={{ fontSize: 22, fontWeight: 'bold', color: '#FFFFFF' }}>🚌 JaMobility</div>
           </div>
 
           {/* Body */}
@@ -65,7 +65,7 @@ export function DepartureReminderEmail(props: Props): React.ReactElement {
 
           {/* Footer */}
           <div style={{ backgroundColor: '#F1F5F9', borderRadius: '0 0 12px 12px', border: '1px solid #E2E8F0', borderTop: 'none', padding: '14px 32px', textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#94A3B8' }}>© 2026 JaTravel — japanarenacorp.com</div>
+            <div style={{ fontSize: 11, color: '#94A3B8' }}>© 2026 JaMobility — japanarenacorp.com</div>
           </div>
         </div>
       </body>

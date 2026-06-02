@@ -5,7 +5,7 @@ export async function generateQRDataURL(bookingCode: string): Promise<string> {
     bookingCode,
     type: 'travel',
     version: 1,
-    issuer: 'JaTravel',
+    issuer: 'JaMobility',
   })
 
   return QRCode.toDataURL(content, {

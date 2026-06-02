@@ -61,7 +61,7 @@ export default async function ETicket({
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold opacity-70 uppercase tracking-widest mb-1">E-TICKET</p>
-            <p className="font-display font-bold text-xl">JaTravel</p>
+            <p className="font-display font-bold text-xl">JaMobility</p>
           </div>
           {/* QR Code */}
           <div className="bg-white rounded-xl p-1.5 shadow">

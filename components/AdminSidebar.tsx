@@ -65,7 +65,7 @@ export default function AdminSidebar() {
             </div>
             <div>
               <p className="font-display font-extrabold text-xl text-slate-900 leading-tight">
-                JaTravel
+                JaMobility
               </p>
               <p
                 className="text-[9px] font-bold tracking-[3px] uppercase"

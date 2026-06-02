@@ -56,7 +56,7 @@ export default function HeaderClient({ initialUser }: Props) {
             J
           </div>
           <span className="font-display font-bold text-xl tracking-tight text-slate-900 hidden sm:block">
-            JaTravel
+            JaMobility
           </span>
         </Link>
 

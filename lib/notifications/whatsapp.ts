@@ -43,7 +43,7 @@ function buildMessage(event: WAEvent, p: WAParams): string {
       `Segera selesaikan pembayaran dalam 2 jam:`,
       ticketUrl,
       ``,
-      `_JaTravel_`,
+      `_JaMobility_`,
     ].join('\n'),
 
     payment_success: [

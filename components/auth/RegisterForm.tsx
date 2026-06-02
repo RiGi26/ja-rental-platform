@@ -82,14 +82,14 @@ export default function RegisterForm({ next }: Props) {
                             text-white font-bold text-xl group-hover:bg-primary-hover transition-colors">
               J
             </div>
-            <span className="font-display font-bold text-2xl text-slate-900">JaTravel</span>
+            <span className="font-display font-bold text-2xl text-slate-900">JaMobility</span>
           </Link>
         </div>
 
         <div className="bg-white rounded-2xl shadow-card p-8">
           <div className="mb-6">
             <h1 className="font-display font-bold text-xl text-slate-900 mb-1">
-              Buat Akun JaTravel
+              Buat Akun JaMobility
             </h1>
             <p className="text-slate-500 text-sm">
               Gratis — simpan riwayat booking dan tracking perjalanan

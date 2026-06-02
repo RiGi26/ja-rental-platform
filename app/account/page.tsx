@@ -66,7 +66,7 @@ export default async function AccountPage({
             <span className="text-2xl">🎉</span>
             <div>
               <p className="font-semibold text-green-800 text-sm">Akun berhasil dibuat!</p>
-              <p className="text-green-700 text-xs mt-0.5">Selamat datang di JaTravel, {firstName}.</p>
+              <p className="text-green-700 text-xs mt-0.5">Selamat datang di JaMobility, {firstName}.</p>
             </div>
           </div>
         )}

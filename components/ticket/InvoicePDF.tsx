@@ -262,13 +262,13 @@ export function InvoicePDF({ booking, schedule, passengers, payment }: InvoicePD
   const invoiceNo      = `INV-${booking.booking_code}-${invoiceDate}`
 
   return (
-    <Document title={`Invoice ${invoiceNo}`} author="JaTravel">
+    <Document title={`Invoice ${invoiceNo}`} author="JaMobility">
       <Page size="A4" style={s.page}>
 
         {/* Header */}
         <View style={s.headerRow}>
           <View>
-            <Text style={s.brandName}>JaTravel</Text>
+            <Text style={s.brandName}>JaMobility</Text>
             <Text style={s.brandSub}>PT Japan Arena Corp</Text>
             <Text style={s.brandSub}>japanarenacorp.com</Text>
           </View>

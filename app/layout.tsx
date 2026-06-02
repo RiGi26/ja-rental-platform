@@ -21,8 +21,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: 'JaTravel — Travel & Rental Mobil',
-    template: '%s | JaTravel',
+    default: 'JaMobility — Travel & Rental Mobil',
+    template: '%s | JaMobility',
   },
   description: 'Platform booking travel antar kota & rental mobil premium JapanArena Corp.',
 }

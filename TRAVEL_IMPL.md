@@ -410,7 +410,7 @@ Stats Section (di bawah hero):
 // Meta: title "Platform Travel & Rental Mobil Terpercaya"
 
 export const metadata = {
-  title: 'JaTravel — Travel Antar Kota & Rental Mobil',
+  title: 'JaMobility — Travel Antar Kota & Rental Mobil',
   description: 'Pesan tiket travel dan rental mobil dengan mudah, cepat, dan terpercaya.',
 }
 ```
@@ -817,7 +817,7 @@ app/api/ticket/[bookingCode]/pdf/route.ts   ← endpoint download PDF
 ```
 ┌──────────────────────────────────────────────┐
 │  🎫 E-TICKET                    [QR CODE]    │
-│  JaTravel                                    │
+│  JaMobility                                    │
 │──────────────────────────────────────────────│
 │  JAKARTA → BANDUNG                           │
 │  Senin, 2 Juni 2026                          │
@@ -849,7 +849,7 @@ app/api/ticket/[bookingCode]/pdf/route.ts   ← endpoint download PDF
 
 ```typescript
 // Konten invoice:
-// Header: Logo JaTravel, No. Invoice (INV-{bookingCode}-{date}), Tanggal
+// Header: Logo JaMobility, No. Invoice (INV-{bookingCode}-{date}), Tanggal
 // Bill to: nama customer, email, nomor HP
 // Tabel item: Tiket perjalanan × 2 penumpang, harga satuan, total
 // Subtotal, Biaya layanan, Total
@@ -1054,7 +1054,7 @@ RESEND_API_KEY=
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=JaTravel
+NEXT_PUBLIC_APP_NAME=JaMobility
 ```
 
 ---

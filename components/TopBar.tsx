@@ -31,7 +31,7 @@ export default function TopBar({ userName = 'Admin' }: Props) {
           <p className="font-semibold text-slate-800 text-sm">
             {greeting}, {userName}!
           </p>
-          <p className="text-slate-400 text-xs">Admin Panel · JaTravel</p>
+          <p className="text-slate-400 text-xs">Admin Panel · JaMobility</p>
         </div>
       </div>
 

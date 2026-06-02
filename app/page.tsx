@@ -6,10 +6,10 @@ import StatsSection from '@/components/home/StatsSection'
 import HowItWorks from '@/components/home/HowItWorks'
 
 export const metadata: Metadata = {
-  title: 'JaTravel — Travel Antar Kota & Rental Mobil Terpercaya',
+  title: 'JaMobility — Travel Antar Kota & Rental Mobil Terpercaya',
   description: 'Pesan tiket travel antar kota dan rental mobil premium secara online. Kursi realtime, e-ticket otomatis, tracking langsung.',
   openGraph: {
-    title: 'JaTravel — Travel & Rental Mobil',
+    title: 'JaMobility — Travel & Rental Mobil',
     description: 'Platform booking travel antar kota & rental mobil JapanArena Corp.',
     type: 'website',
   },
@@ -54,7 +54,7 @@ export default async function HomePage() {
       <footer className="bg-slate-950 text-slate-400 py-14 px-4 border-t border-slate-900">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8 text-sm">
           <div className="max-w-sm">
-            <p className="text-white font-display font-bold text-xl mb-2 tracking-tight">JaTravel <span className="text-primary text-sm align-top">PRO</span></p>
+            <p className="text-white font-display font-bold text-xl mb-2 tracking-tight">JaMobility <span className="text-primary text-sm align-top">PRO</span></p>
             <p className="leading-relaxed">
               Infrastruktur reservasi travel dan rental mobil digital persembahan <span className="text-white font-medium">JapanArena Corp</span>. Solusi operasional transportasi dengan standar efisiensi global.
             </p>
@@ -72,4 +72,5 @@ export default async function HomePage() {
       </footer>
     </main>
   )
+}
 }

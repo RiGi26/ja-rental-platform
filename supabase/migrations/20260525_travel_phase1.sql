@@ -188,7 +188,7 @@ CREATE INDEX IF NOT EXISTS idx_schedules_status ON schedules(status);
 
 -- Tenant
 INSERT INTO tenants (id, name, slug, plan, status) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'JaTravel Demo', 'jatravel-demo', 'pro', 'active')
+  ('00000000-0000-0000-0000-000000000001', 'JaMobility Demo', 'JaMobility-demo', 'pro', 'active')
 ON CONFLICT (id) DO NOTHING;
 
 -- Vehicles

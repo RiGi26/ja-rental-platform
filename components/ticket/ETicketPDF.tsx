@@ -311,7 +311,7 @@ export function ETicketPDF({ booking, schedule, passengers, payment, qrDataUrl }
   }
 
   return (
-    <Document title={`E-Ticket ${booking.booking_code}`} author="JaTravel">
+    <Document title={`E-Ticket ${booking.booking_code}`} author="JaMobility">
       <Page size="A4" style={s.page}>
 
         {/* Watermark */}
@@ -324,7 +324,7 @@ export function ETicketPDF({ booking, schedule, passengers, payment, qrDataUrl }
         {/* Header */}
         <View style={s.header}>
           <View style={s.detailLeft}>
-            <Text style={s.headerBrand}>JaTravel</Text>
+            <Text style={s.headerBrand}>JaMobility</Text>
             <Text style={s.headerLabel}>E-TICKET PERJALANAN</Text>
           </View>
           {qrDataUrl ? (
@@ -422,7 +422,7 @@ export function ETicketPDF({ booking, schedule, passengers, payment, qrDataUrl }
         <View style={s.notice}>
           <Text style={s.noticeText}>
             Harap hadir minimal 15 menit sebelum keberangkatan. Tiket ini sah secara digital.
-            Dikeluarkan oleh JaTravel — japanarenacorp.com
+            Dikeluarkan oleh JaMobility — japanarenacorp.com
           </Text>
         </View>
 

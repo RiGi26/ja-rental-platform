@@ -46,7 +46,7 @@ export function BookingConfirmationEmail(props: Props): React.ReactElement {
 
           {/* Header */}
           <div style={{ backgroundColor: '#1A56DB', borderRadius: '12px 12px 0 0', padding: '28px 32px', textAlign: 'center' }}>
-            <div style={{ fontSize: 26, fontWeight: 'bold', color: '#FFFFFF' }}>🚌 JaTravel</div>
+            <div style={{ fontSize: 26, fontWeight: 'bold', color: '#FFFFFF' }}>🚌 JaMobility</div>
             <div style={{ fontSize: 12, color: '#BFDBFE', marginTop: 4, letterSpacing: 2 }}>E-TICKET PERJALANAN</div>
           </div>
 
@@ -136,7 +136,7 @@ export function BookingConfirmationEmail(props: Props): React.ReactElement {
           {/* Footer */}
           <div style={{ backgroundColor: '#F1F5F9', borderRadius: '0 0 12px 12px', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0', padding: '16px 32px', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#94A3B8' }}>
-              © 2026 JaTravel — PT Japan Arena Corp
+              © 2026 JaMobility — PT Japan Arena Corp
             </div>
             <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
               japanarenacorp.com · noreply@japanarenacorp.com
