@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { createCoreClient } from '@/lib/supabase/server'
 import HeroSection from '@/components/home/HeroSection'
 import StatsSection from '@/components/home/StatsSection'
 import HowItWorks from '@/components/home/HowItWorks'
@@ -13,7 +15,19 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Smart UX Redirect: Jika user sudah login sebagai portal user, langsung lempar ke dashboard
+  const supabase = await createCoreClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    const role = user.app_metadata?.role as string
+    if (role === 'admin') redirect('/admin')
+    if (role === 'owner') redirect('/owner')
+    if (role === 'driver') redirect('/driver')
+    // Customer tetap di landing page (default behavior)
+  }
+
   return (
     <main>
       <HeroSection />
