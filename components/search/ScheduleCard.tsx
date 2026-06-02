@@ -56,7 +56,7 @@ export default function ScheduleCard({ schedule, passengers }: Props) {
       {/* Rute & waktu */}
       <div className="flex items-center gap-2 mb-3">
         <div className="text-center">
-          <p className="text-xl font-bold text-slate-900">{formatTime(schedule.depart_at)}</p>
+          <p className="text-xl font-bold text-slate-900 tabular-nums">{formatTime(schedule.depart_at)}</p>
           <p className="text-sm font-medium text-slate-700">{route?.origin}</p>
         </div>
 
@@ -74,7 +74,7 @@ export default function ScheduleCard({ schedule, passengers }: Props) {
         </div>
 
         <div className="text-center">
-          <p className="text-xl font-bold text-slate-900">{arrivalTime}</p>
+          <p className="text-xl font-bold text-slate-900 tabular-nums">{arrivalTime}</p>
           <p className="text-sm font-medium text-slate-700">{route?.destination}</p>
         </div>
       </div>
@@ -116,6 +116,11 @@ export default function ScheduleCard({ schedule, passengers }: Props) {
         >
           Pilih →
         </button>
+      </div>
+    </div>
+  )
+}
+on>
       </div>
     </div>
   )
