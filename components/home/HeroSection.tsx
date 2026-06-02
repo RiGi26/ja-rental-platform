@@ -32,13 +32,12 @@ export default function HeroSection() {
         {/* Headline */}
         <h1 className="text-center text-white font-display font-bold leading-tight mb-4"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-          Mobilitas Tanpa Batas,<br />
-          <span className="text-sky-300">Bebas Repot</span>
+          Pesan Travel & Sewa Mobil,<br />
+          <span className="text-sky-300">Pilih Kursi Realtime</span>
         </h1>
 
         <p className="text-center text-white/70 text-base md:text-lg max-w-xl mb-10">
-          Sewa mobil eksklusif atau pesan travel antar kota dengan ketersediaan real-time.
-          Langsung jalan dengan e-ticket dan live tracking.
+          Lupakan antre dan konfirmasi manual. Amankan jadwal perjalanan Anda dalam 2 menit dengan e-ticket otomatis dan tracking driver langsung.
         </p>
 
         {/* SearchBox */}

@@ -23,16 +23,16 @@ export default function HomePage() {
       {/* CTA Bottom */}
       <section className="bg-primary py-20 px-4 text-center text-white">
         <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-          Tingkatkan Standar Perjalanan Anda
+          Pesan Sekarang, Jalan Lebih Tenang
         </h2>
         <p className="text-white/80 mb-10 text-lg max-w-2xl mx-auto">
-          Percayakan kebutuhan mobilitas bisnis dan personal Anda pada infrastruktur transportasi yang andal, aman, dan terintegrasi penuh.
+          Dapatkan konfirmasi instan dan pilih kursi favorit Anda. Tidak perlu lagi menunggu konfirmasi manual atau khawatir kursi penuh.
         </p>
         <a
           href="#hero"
           className="inline-flex items-center gap-2 bg-white text-primary font-bold px-10 py-4 rounded-xl hover:bg-slate-50 transition-colors shadow-glow"
         >
-          Mulai Reservasi Anda →
+          Lihat Jadwal Tersedia →
         </a>
       </section>
 
@@ -42,7 +42,7 @@ export default function HomePage() {
           <div className="max-w-sm">
             <p className="text-white font-display font-bold text-xl mb-2 tracking-tight">JaTravel <span className="text-primary text-sm align-top">PRO</span></p>
             <p className="leading-relaxed">
-              Layanan mobilitas korporat dan penyewaan armada eksklusif persembahan <span className="text-white font-medium">JapanArena Corp</span>. Solusi transportasi dengan standar keamanan global.
+              Infrastruktur reservasi travel dan rental mobil digital persembahan <span className="text-white font-medium">JapanArena Corp</span>. Solusi operasional transportasi dengan standar efisiensi global.
             </p>
           </div>
           <div className="flex flex-wrap gap-8 font-medium">

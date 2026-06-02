@@ -1,8 +1,8 @@
 const stats = [
-  { icon: '🚌', value: '10.000+', label: 'Penumpang Puas', desc: 'Setiap bulan mempercayai kami' },
-  { icon: '🗺️', value: '50+', label: 'Rute Antar Kota', desc: 'Jawa, Bali, Sumatra & lebih' },
-  { icon: '⭐', value: '4.8', label: 'Rating Rata-rata', desc: 'Dari ribuan ulasan customer' },
-  { icon: '⚡', value: '< 3 mnt', label: 'Waktu Booking', desc: 'Dari search hingga e-ticket' },
+  { icon: '🚌', value: '10.000+', label: 'Tiket Terjual', desc: 'Perjalanan aman setiap bulan' },
+  { icon: '🗺️', value: '50+', label: 'Rute Antar Kota', desc: 'Menghubungkan Jawa, Bali, & Sumatra' },
+  { icon: '⭐', value: '4.8', label: 'Rating Aplikasi', desc: 'Berdasarkan 5.000+ ulasan asli' },
+  { icon: '⚡', value: '< 2 mnt', label: 'Proses Booking', desc: 'Dari cari rute hingga e-ticket' },
 ]
 
 export default function StatsSection() {
