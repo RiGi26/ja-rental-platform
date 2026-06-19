@@ -55,29 +55,23 @@ export default function AdminSidebar() {
         style={{ boxShadow: '4px 0 24px rgba(15,23,42,0.06)' }}
       >
         {/* Logo area */}
-        <div className="px-6 pt-7 pb-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-2xl flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)' }}
-            >
-              🚐
-            </div>
-            <div>
-              <p className="font-display font-extrabold text-xl text-slate-900 leading-tight">
-                JaMobility
-              </p>
-              <p
-                className="text-[9px] font-bold tracking-[3px] uppercase"
-                style={{ color: '#2563eb' }}
-              >
-                JAPANARA CORP
-              </p>
-            </div>
+        <div className="pt-7 pb-5 px-6 flex flex-col items-center justify-center border-b border-slate-100 relative">
+          <img
+            src="/logo-rocket.png"
+            alt="Logo Webzoka"
+            className="h-12 w-auto object-contain mb-3"
+          />
+          <div className="text-center">
+            <p className="font-display font-extrabold text-lg text-slate-900 leading-tight">
+              JaMobility
+            </p>
+            <p className="text-[9px] font-bold tracking-widest text-slate-400 uppercase mt-0.5">
+              Portal Operasi
+            </p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+            className="lg:hidden absolute right-4 top-7 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
           >
             <X size={18} />
           </button>

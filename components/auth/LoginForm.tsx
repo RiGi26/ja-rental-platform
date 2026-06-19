@@ -110,18 +110,12 @@ export function LoginForm() {
       </Link>
 
       <div className="bg-white rounded-[32px] shadow-panel border border-slate-100 p-8 md:p-10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-[0.03]">
-            <ShieldCheck size={120} />
-        </div>
-
-        <div className="mb-8 relative z-10">
-          <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-4">
-              <ShieldCheck size={24} />
-          </div>
-          <h1 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-1">
+        <div className="mb-8 relative z-10 flex flex-col items-center">
+          <img src="/logo-rocket.png" alt="Logo Webzoka" className="h-16 w-16 object-contain mb-4" />
+          <h1 className="font-display font-black text-2xl text-slate-900 tracking-tight mb-1 text-center">
             Portal Login.
           </h1>
-          <p className="text-slate-500 text-sm font-medium">
+          <p className="text-slate-500 text-sm font-medium text-center">
             Akses panel manajemen JapanArena Travel.
           </p>
         </div>
