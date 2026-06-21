@@ -55,20 +55,12 @@ export default function AdminSidebar() {
         style={{ boxShadow: '4px 0 24px rgba(15,23,42,0.06)' }}
       >
         {/* Logo area */}
-        <div className="pt-7 pb-5 px-6 flex flex-col items-center justify-center border-b border-slate-100 relative">
+        <div className="pt-6 pb-5 px-6 flex items-center justify-center border-b border-slate-100 relative">
           <img
-            src="/logo-rocket.png"
-            alt="Logo Webzoka"
-            className="h-12 w-auto object-contain mb-3"
+            src="/logo-wide-clean.png"
+            alt="Webzoka — Part of Japan Arena Corp"
+            className="w-[210px] max-w-[82%] max-h-[68px] object-contain"
           />
-          <div className="text-center">
-            <p className="font-display font-extrabold text-lg text-slate-900 leading-tight">
-              JaMobility
-            </p>
-            <p className="text-[9px] font-bold tracking-widest text-slate-400 uppercase mt-0.5">
-              Portal Operasi
-            </p>
-          </div>
           <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden absolute right-4 top-7 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
