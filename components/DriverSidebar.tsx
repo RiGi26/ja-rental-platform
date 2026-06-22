@@ -14,16 +14,12 @@ export default function DriverSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-bg-card border-r border-slate-100 shadow-card z-40 flex flex-col">
-      <div className="p-6 border-b border-slate-100 flex flex-col items-center justify-center text-center">
+      <div className="p-6 border-b border-slate-100 flex items-center justify-center">
         <img
-          src="/logo-rocket.png"
-          alt="Logo Webzoka"
-          className="h-10 w-auto object-contain mb-3"
+          src="/logo-wide-clean.png"
+          alt="Webzoka — Part of Japan Arena Corp"
+          className="w-[210px] max-w-[86%] max-h-[68px] object-contain"
         />
-        <div>
-          <p className="font-display font-bold text-slate-900 text-sm leading-tight">JA Travel</p>
-          <p className="text-text-muted text-[10px] uppercase font-bold tracking-wider mt-0.5">Driver App</p>
-        </div>
       </div>
       <nav className="flex-1 py-4 px-3 space-y-1">
         {nav.map(item => (
