@@ -183,7 +183,7 @@ export default function RegisterPage() {
                           required
                         />
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-                          .japanarenacorp.com
+                          .rent.webzoka.com
                         </div>
                       </div>
                       <p className="text-[10px] text-slate-400 italic">Ini akan menjadi alamat website operasional Anda nantinya.</p>
