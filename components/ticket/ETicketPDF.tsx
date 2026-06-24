@@ -422,7 +422,7 @@ export function ETicketPDF({ booking, schedule, passengers, payment, qrDataUrl }
         <View style={s.notice}>
           <Text style={s.noticeText}>
             Harap hadir minimal 15 menit sebelum keberangkatan. Tiket ini sah secara digital.
-            Dikeluarkan oleh JaMobility — japanarenacorp.com
+            Dikeluarkan oleh JaMobility — webzoka.com
           </Text>
         </View>
 

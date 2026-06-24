@@ -139,7 +139,7 @@ export function BookingConfirmationEmail(props: Props): React.ReactElement {
               © 2026 JaMobility — PT Japan Arena Corp
             </div>
             <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
-              japanarenacorp.com · noreply@japanarenacorp.com
+              webzoka.com · noreply@webzoka.com
             </div>
           </div>
 

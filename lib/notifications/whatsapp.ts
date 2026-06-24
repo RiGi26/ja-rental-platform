@@ -27,7 +27,7 @@ function normalizePhone(phone: string): string {
 }
 
 function buildMessage(event: WAEvent, p: WAParams): string {
-  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://ja-rental-platform.vercel.app'
+  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://rent.webzoka.com'
   const ticketUrl  = `${appUrl}/booking/confirm/${p.bookingCode}`
   const trackingUrl = `${appUrl}/tracking/${p.bookingCode}`
 

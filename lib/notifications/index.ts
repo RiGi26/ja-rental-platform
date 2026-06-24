@@ -2,7 +2,7 @@ import { createCoreServiceClient, createRentalServiceClient } from '@/lib/supaba
 import { sendWhatsApp } from './whatsapp'
 import { sendBookingConfirmationEmail, sendPaymentReminderEmail, sendDepartureReminderEmail } from './email'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://ja-rental-platform.vercel.app'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://rent.webzoka.com'
 
 function formatDateTime(iso: string): string {
   return new Intl.DateTimeFormat('id-ID', {

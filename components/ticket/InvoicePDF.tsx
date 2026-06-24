@@ -270,7 +270,7 @@ export function InvoicePDF({ booking, schedule, passengers, payment }: InvoicePD
           <View>
             <Text style={s.brandName}>JaMobility</Text>
             <Text style={s.brandSub}>PT Japan Arena Corp</Text>
-            <Text style={s.brandSub}>japanarenacorp.com</Text>
+            <Text style={s.brandSub}>webzoka.com</Text>
           </View>
           <View style={s.invoiceBlock}>
             <Text style={s.invoiceTitle}>INVOICE</Text>
@@ -385,7 +385,7 @@ export function InvoicePDF({ booking, schedule, passengers, payment }: InvoicePD
         {/* Footer */}
         <View style={s.pageFooter} fixed>
           <Text style={s.footerText}>Invoice ini sah secara digital tanpa tanda tangan basah.</Text>
-          <Text style={s.footerText}>japanarenacorp.com  |  noreply@japanarenacorp.com</Text>
+          <Text style={s.footerText}>webzoka.com  |  noreply@webzoka.com</Text>
         </View>
 
       </Page>
