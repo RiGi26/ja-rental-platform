@@ -15,10 +15,10 @@ function getResend() {
 }
 
 const FROM = process.env.RESEND_DOMAIN_VERIFIED === 'true'
-  ? 'noreply@japanarenacorp.com'
+  ? 'noreply@webzoka.com'
   : 'onboarding@resend.dev'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://ja-rental-platform.vercel.app'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://rent.webzoka.com'
 
 function formatDateTime(iso: string): string {
   return new Intl.DateTimeFormat('id-ID', {
