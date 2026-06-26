@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props) {
   const schedule = await getScheduleById(scheduleId)
   if (!schedule) return { title: 'Jadwal Tidak Ditemukan' }
   return {
-    title: `Booking ${schedule.route?.origin} → ${schedule.route?.destination} | JapanArena Travel`,
+    title: `Booking ${schedule.route?.origin} → ${schedule.route?.destination} | Webzoka Travel`,
   }
 }
 

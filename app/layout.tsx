@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     default: 'JaMobility — Travel & Rental Mobil',
     template: '%s | JaMobility',
   },
-  description: 'Platform booking travel antar kota & rental mobil premium JapanArena Corp.',
+  description: 'Platform booking travel antar kota & rental mobil premium Webzoka Travel.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

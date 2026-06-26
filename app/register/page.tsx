@@ -125,7 +125,7 @@ export default function RegisterPage() {
             <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-glow">
               <ShieldCheck size={28} />
             </div>
-            <h1 className="text-2xl font-display font-black text-slate-900 tracking-tight">JapanArena <span className="text-primary">Travel PRO</span></h1>
+            <h1 className="text-2xl font-display font-black text-slate-900 tracking-tight">Webzoka <span className="text-primary">Travel PRO</span></h1>
           </Link>
           <p className="text-slate-500 font-medium italic">Transformasi Digital untuk Bisnis Travel & Rental Anda.</p>
         </div>
