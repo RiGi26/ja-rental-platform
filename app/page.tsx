@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Pesan tiket travel antar kota dan rental mobil premium secara online. Kursi realtime, e-ticket otomatis, tracking langsung.',
   openGraph: {
     title: 'JaMobility — Travel & Rental Mobil',
-    description: 'Platform booking travel antar kota & rental mobil JapanArena Corp.',
+    description: 'Platform booking travel antar kota & rental mobil Webzoka Travel.',
     type: 'website',
   },
 }
@@ -56,7 +56,7 @@ export default async function HomePage() {
           <div className="max-w-sm">
             <p className="text-white font-display font-bold text-xl mb-2 tracking-tight">JaMobility <span className="text-primary text-sm align-top">PRO</span></p>
             <p className="leading-relaxed">
-              Infrastruktur reservasi travel dan rental mobil digital persembahan <span className="text-white font-medium">JapanArena Corp</span>. Solusi operasional transportasi dengan standar efisiensi global.
+              Infrastruktur reservasi travel dan rental mobil digital persembahan <span className="text-white font-medium">Webzoka Travel</span>. Solusi operasional transportasi dengan standar efisiensi global.
             </p>
           </div>
           <div className="flex flex-wrap gap-8 font-medium">
@@ -65,7 +65,7 @@ export default async function HomePage() {
             <a href="/search" className="hover:text-white transition-colors">Fleet Availability</a>
           </div>
           <div className="md:text-right">
-            <p className="text-xs text-slate-500">© 2026 JapanArena Corp.</p>
+            <p className="text-xs text-slate-500">© 2026 Webzoka</p>
             <p className="text-xs text-slate-500 mt-1">All rights reserved worldwide.</p>
           </div>
         </div>

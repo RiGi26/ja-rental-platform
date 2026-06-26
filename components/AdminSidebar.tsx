@@ -98,7 +98,7 @@ export default function AdminSidebar() {
         <div className="px-4 pb-5 pt-3 border-t border-slate-100">
           <div className="flex items-center justify-between px-4 py-2">
             <div>
-              <p className="text-xs font-bold text-slate-700">JapanarEna Corp</p>
+              <p className="text-xs font-bold text-slate-700">Webzoka</p>
               <p className="text-[10px] text-slate-400">Admin Panel</p>
             </div>
             <button

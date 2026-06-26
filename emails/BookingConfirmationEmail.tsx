@@ -136,7 +136,7 @@ export function BookingConfirmationEmail(props: Props): React.ReactElement {
           {/* Footer */}
           <div style={{ backgroundColor: '#F1F5F9', borderRadius: '0 0 12px 12px', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0', padding: '16px 32px', textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#94A3B8' }}>
-              © 2026 JaMobility — PT Japan Arena Corp
+              © 2026 JaMobility — Webzoka
             </div>
             <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
               webzoka.com · noreply@webzoka.com

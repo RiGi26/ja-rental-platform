@@ -116,7 +116,7 @@ export function LoginForm() {
             Portal Login.
           </h1>
           <p className="text-slate-500 text-sm font-medium text-center">
-            Akses panel manajemen JapanArena Travel.
+            Akses panel manajemen Webzoka Travel.
           </p>
         </div>
 
@@ -229,7 +229,7 @@ export function LoginForm() {
       </div>
 
       <p className="text-center text-[10px] font-bold text-slate-400 mt-8 uppercase tracking-widest">
-        © 2026 JapanArena Corp · Standard Keamanan Global
+        © 2026 Webzoka · Standard Keamanan Global
       </p>
     </div>
   )

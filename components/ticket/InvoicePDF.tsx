@@ -269,7 +269,7 @@ export function InvoicePDF({ booking, schedule, passengers, payment }: InvoicePD
         <View style={s.headerRow}>
           <View>
             <Text style={s.brandName}>JaMobility</Text>
-            <Text style={s.brandSub}>PT Japan Arena Corp</Text>
+            <Text style={s.brandSub}>Webzoka</Text>
             <Text style={s.brandSub}>webzoka.com</Text>
           </View>
           <View style={s.invoiceBlock}>
