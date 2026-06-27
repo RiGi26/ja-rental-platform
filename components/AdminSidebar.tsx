@@ -5,25 +5,30 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useLayoutStore } from '@/store/useLayoutStore'
 import { X } from 'lucide-react'
 import { createCoreClient } from '@/lib/supabase/client'
+import type { EntitlementKey } from '@/lib/entitlements'
 
-const menuItems = [
+type MenuItem = { icon: string; label: string; href: string; ent?: EntitlementKey }
+
+const menuItems: MenuItem[] = [
   { icon: '📊', label: 'Dashboard',        href: '/admin' },
   { icon: '🚐', label: 'Armada',           href: '/admin/fleet' },
-  { icon: '📍', label: 'Live Tracking',    href: '/admin/tracking' },
+  { icon: '📍', label: 'Live Tracking',    href: '/admin/tracking', ent: 'gps_tracking' },
   { icon: '🛣️', label: 'Rute Tetap',      href: '/admin/routes' },
   { icon: '👨‍✈️', label: 'Driver & Karyawan', href: '/admin/drivers' },
   { icon: '📅', label: 'Jadwal',           href: '/admin/schedules' },
   { icon: '📋', label: 'Booking',          href: '/admin/bookings' },
-  { icon: '💳', label: 'Pembayaran',       href: '/admin/bookings?tab=payment' },
-  { icon: '📈', label: 'Laporan',          href: '/admin/reports' },
+  { icon: '💳', label: 'Pembayaran',       href: '/admin/bookings?tab=payment', ent: 'online_payment' },
+  { icon: '📈', label: 'Laporan',          href: '/admin/reports', ent: 'reports' },
   { icon: '🔧', label: 'Reminder Servis',  href: '/admin/fleet?tab=reminder' },
   { icon: '⚙️', label: 'Pengaturan',      href: '/admin/settings' },
 ]
 
-export default function AdminSidebar() {
+/** entitlements undefined = show all (legacy / not synced). */
+export default function AdminSidebar({ entitlements }: { entitlements?: EntitlementKey[] }) {
   const pathname = usePathname()
   const router   = useRouter()
   const { isSidebarOpen, setSidebarOpen } = useLayoutStore()
+  const items = menuItems.filter(i => !i.ent || !entitlements || entitlements.includes(i.ent))
 
   async function handleSignOut() {
     const supabase = createCoreClient()
@@ -71,7 +76,7 @@ export default function AdminSidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 px-4 pb-4 space-y-1 overflow-y-auto">
-          {menuItems.map(item => {
+          {items.map(item => {
             const active = isActive(item.href)
             return (
               <Link

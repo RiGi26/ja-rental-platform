@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createCoreClient } from '@/lib/supabase/server'
 import { createCoreServiceClient } from '@/lib/supabase/service'
+import { getTenantEntitlements } from '@/lib/tenant-entitlements'
+import { isSubscriptionActive } from '@/lib/entitlements'
 import AdminSidebar from '@/components/AdminSidebar'
 import TopBar from '@/components/TopBar'
 
@@ -37,9 +39,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     user.email?.split('@')[0] ??
     'Admin'
 
+  // Tier entitlements → filter the sidebar to the tenant's package. A tenant
+  // without an entitlement row (or before the migration is applied) resolves to
+  // 'legacy' (all features) so nothing is hidden until Core syncs a real tier.
+  const tenantId = (claims.tenant_id ?? claims.linked_tenant_id) as string | undefined
+  const ent = tenantId ? await getTenantEntitlements(tenantId) : null
+  const entitlements = ent && isSubscriptionActive(ent.status) ? ent.entitlements : undefined
+
   return (
     <div className="min-h-screen" style={{ background: '#f5f7fb' }}>
-      <AdminSidebar />
+      <AdminSidebar entitlements={entitlements} />
       <div className="flex flex-col min-h-screen lg:pl-[280px] transition-all duration-300">
         <TopBar userName={displayName} />
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden">{children}</main>

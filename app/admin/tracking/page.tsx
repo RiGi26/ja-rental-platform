@@ -1,10 +1,14 @@
 import type { Metadata } from 'next'
 import { getActiveSchedules } from '@/lib/actions/admin.actions'
+import { assertEntitled } from '@/lib/tenant-entitlements'
 import TrackingTable from '@/components/admin/TrackingTable'
 
 export const metadata: Metadata = { title: 'Live Tracking' }
 
 export default async function AdminTrackingPage() {
+  // Tier gate: GPS Live Tracking = Pro (Starter/Growth diblok → upsell).
+  await assertEntitled('gps_tracking')
+
   const schedules = await getActiveSchedules()
 
   return (
