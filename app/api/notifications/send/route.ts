@@ -1,4 +1,5 @@
 import { createRentalServiceClient } from '@/lib/supabase/service'
+import { guardEntitlementApi } from '@/lib/tenant-entitlements'
 import { notifyPaymentSuccess, notifyPaymentReminder, notifyDepartureReminder } from '@/lib/notifications'
 
 type NotifyEvent = 'payment_success' | 'payment_reminder' | 'departure_reminder'
@@ -14,12 +15,19 @@ export async function POST(req: Request) {
     const supabase = createRentalServiceClient()
     const { data: booking } = await supabase
       .from('bookings')
-      .select('id')
+      .select('id, tenant_id')
       .eq('booking_code', bookingCode)
       .single()
 
     if (!booking) {
       return Response.json({ error: 'Booking tidak ditemukan' }, { status: 404 })
+    }
+
+    // Tier gate: notifikasi WhatsApp otomatis = Growth+ (legacy/Pro allowed).
+    const tenantId = (booking as { tenant_id?: string }).tenant_id
+    if (tenantId) {
+      const waGuard = await guardEntitlementApi(tenantId, 'wa_notif')
+      if (waGuard) return waGuard
     }
 
     switch (event) {

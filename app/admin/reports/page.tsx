@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getReportsData } from '@/lib/actions/admin.actions'
+import { assertEntitled } from '@/lib/tenant-entitlements'
 import { formatRupiah } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Laporan & Analytics' }
@@ -27,6 +28,9 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 }
 
 export default async function AdminReportsPage() {
+  // Tier gate: Laporan & Analitik = Growth+ (Starter diblok → upsell di /admin).
+  await assertEntitled('reports')
+
   const { payments, bookings, vehicles } = await getReportsData()
 
   // Revenue per month

@@ -1,4 +1,5 @@
 import { createRentalServiceClient } from '@/lib/supabase/service'
+import { guardEntitlementApi } from '@/lib/tenant-entitlements'
 import { createSnapToken, isMockMode } from '@/lib/midtrans'
 
 export async function POST(req: Request) {
@@ -22,6 +23,14 @@ export async function POST(req: Request) {
 
     if (!booking) {
       return Response.json({ error: 'Booking tidak ditemukan' }, { status: 404 })
+    }
+
+    // Tier gate: pembayaran online (Midtrans) = Growth+. Starter pakai konfirmasi
+    // bayar manual saja. Tenant diturunkan dari booking.
+    const tenantId = (booking as Record<string, unknown>).tenant_id as string | undefined
+    if (tenantId) {
+      const payGuard = await guardEntitlementApi(tenantId, 'online_payment')
+      if (payGuard) return payGuard
     }
 
     if (booking.payment_status === 'paid') {

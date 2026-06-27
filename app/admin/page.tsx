@@ -10,6 +10,7 @@ import TrackingTable        from '@/components/admin/TrackingTable'
 import QuickActions         from '@/components/admin/QuickActions'
 import VehicleReminderList  from '@/components/admin/VehicleReminderList'
 import DriverPerformanceList from '@/components/admin/DriverPerformanceList'
+import { UpsellBanner }      from '@/components/UpsellBanner'
 import { formatRupiah }     from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Dashboard Admin' }
@@ -26,7 +27,12 @@ function Card({ title, children, className = '' }: { title: string; children: Re
   )
 }
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upsell?: string; billing?: string }>
+}) {
+  const { upsell, billing } = await searchParams
   const [stats, schedules, reminders, drivers] = await Promise.all([
     getAdminDashboardStats(),
     getActiveSchedules(),
@@ -36,6 +42,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6 animate-fade-up">
+      <UpsellBanner upsell={upsell} billing={billing} />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
