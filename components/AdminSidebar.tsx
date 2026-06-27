@@ -20,6 +20,7 @@ const menuItems: MenuItem[] = [
   { icon: '💳', label: 'Pembayaran',       href: '/admin/bookings?tab=payment', ent: 'online_payment' },
   { icon: '📈', label: 'Laporan',          href: '/admin/reports', ent: 'reports' },
   { icon: '🔧', label: 'Reminder Servis',  href: '/admin/fleet?tab=reminder' },
+  { icon: '🧾', label: 'Langganan',         href: '/admin/langganan' },
   { icon: '⚙️', label: 'Pengaturan',      href: '/admin/settings' },
 ]
 
