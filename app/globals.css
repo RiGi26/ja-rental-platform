@@ -41,6 +41,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
+/* ── Keyboard focus ring (a11y) ─────────────────────── */
+:focus-visible {
+  outline: 2px solid #1A56DB;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);

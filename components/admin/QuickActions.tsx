@@ -12,7 +12,7 @@ const actions = [
 type Color = 'blue' | 'purple' | 'green' | 'orange'
 
 const colorMap: Record<Color, { bg: string; text: string; hover: string }> = {
-  blue:   { bg: '#eff6ff', text: '#2563eb', hover: '#dbeafe' },
+  blue:   { bg: '#eff6ff', text: '#1A56DB', hover: '#dbeafe' },
   purple: { bg: '#faf5ff', text: '#7c3aed', hover: '#ede9fe' },
   green:  { bg: '#f0fdf4', text: '#16a34a', hover: '#dcfce7' },
   orange: { bg: '#fff7ed', text: '#ea580c', hover: '#ffedd5' },
