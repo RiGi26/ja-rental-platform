@@ -81,7 +81,7 @@ export default function BookingTable({ bookings }: Props) {
               onClick={() => setTab(t.key)}
               className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors
                 ${tab === t.key ? 'text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
-              style={tab === t.key ? { background: 'linear-gradient(135deg,#2563eb,#3b82f6)' } : {}}
+              style={tab === t.key ? { background: 'linear-gradient(135deg,#1A56DB,#3b82f6)' } : {}}
             >
               {t.label}
             </button>

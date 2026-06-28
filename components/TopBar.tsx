@@ -23,6 +23,7 @@ export default function TopBar({ userName = 'Admin' }: Props) {
       <div className="flex items-center gap-3">
         <button
           onClick={toggleSidebar}
+          aria-label="Buka menu"
           className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
         >
           <Menu size={22} />
@@ -31,17 +32,17 @@ export default function TopBar({ userName = 'Admin' }: Props) {
           <p className="font-semibold text-slate-800 text-sm">
             {greeting}, {userName}!
           </p>
-          <p className="text-slate-400 text-xs">Admin Panel · JaMobility</p>
+          <p className="text-slate-500 text-xs">Admin Panel · JaMobility</p>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="relative p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+        <button aria-label="Notifikasi" className="relative p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
           <Bell size={19} />
         </button>
         <div
           className="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm font-bold flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)' }}
+          style={{ background: 'linear-gradient(135deg, #1A56DB, #3b82f6)' }}
         >
           {initials}
         </div>

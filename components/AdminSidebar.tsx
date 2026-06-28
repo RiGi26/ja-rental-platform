@@ -69,6 +69,7 @@ export default function AdminSidebar({ entitlements }: { entitlements?: Entitlem
           />
           <button
             onClick={() => setSidebarOpen(false)}
+            aria-label="Tutup menu"
             className="lg:hidden absolute right-4 top-7 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
           >
             <X size={18} />
@@ -88,7 +89,7 @@ export default function AdminSidebar({ entitlements }: { entitlements?: Entitlem
                             font-semibold transition-all duration-200 group
                             ${active ? 'text-white shadow-md' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}`}
                 style={active
-                  ? { background: 'linear-gradient(135deg, #2563eb, #3b82f6)', boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }
+                  ? { background: 'linear-gradient(135deg, #1A56DB, #3b82f6)', boxShadow: '0 4px 14px rgba(26,86,219,0.3)' }
                   : {}}
               >
                 <span className={`text-base leading-none ${active ? '' : 'grayscale group-hover:grayscale-0'}`}>
@@ -105,7 +106,7 @@ export default function AdminSidebar({ entitlements }: { entitlements?: Entitlem
           <div className="flex items-center justify-between px-4 py-2">
             <div>
               <p className="text-xs font-bold text-slate-700">Webzoka</p>
-              <p className="text-[10px] text-slate-400">Admin Panel</p>
+              <p className="text-[10px] text-slate-500">Admin Panel</p>
             </div>
             <button
               onClick={handleSignOut}

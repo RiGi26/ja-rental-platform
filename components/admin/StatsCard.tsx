@@ -7,7 +7,7 @@ interface Props {
 }
 
 const colorMap = {
-  blue:   { bg: '#eff6ff', text: '#2563eb' },
+  blue:   { bg: '#eff6ff', text: '#1A56DB' },
   green:  { bg: '#f0fdf4', text: '#16a34a' },
   purple: { bg: '#faf5ff', text: '#7c3aed' },
   orange: { bg: '#fff7ed', text: '#ea580c' },
@@ -39,8 +39,8 @@ export default function StatsCard({ label, value, subtext, icon, color }: Props)
         >
           {value}
         </p>
-        <p className="text-sm font-medium text-slate-400">{label}</p>
-        <p className="text-xs text-slate-400 mt-0.5">{subtext}</p>
+        <p className="text-sm font-medium text-slate-600">{label}</p>
+        <p className="text-xs text-slate-500 mt-0.5">{subtext}</p>
       </div>
     </div>
   )
