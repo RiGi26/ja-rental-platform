@@ -137,7 +137,7 @@ export default function TravelSearchForm() {
             <button
               type="button"
               onClick={() => setPassengers(Math.min(8, passengers + 1))}
-              className="w-7 h-7 rounded-full bg-primary hover:bg-primary-hover text-white font-bold text-base leading-none transition-colors"
+              className="w-7 h-7 rounded-full bg-[#1A56DB] hover:bg-[#1447C0] text-white font-bold text-base leading-none transition-colors"
             >
               +
             </button>
@@ -147,7 +147,7 @@ export default function TravelSearchForm() {
         {/* Submit */}
         <button
           type="submit"
-          className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-xl transition-colors glow-btn whitespace-nowrap"
+          className="flex items-center justify-center gap-2 bg-[#1A56DB] hover:bg-[#1447C0] text-white font-semibold px-6 py-3 rounded-xl transition-colors glow-btn whitespace-nowrap active:scale-[0.97]"
         >
           Lihat Jadwal Travel
           <ArrowRight size={16} />

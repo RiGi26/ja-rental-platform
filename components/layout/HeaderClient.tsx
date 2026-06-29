@@ -52,7 +52,7 @@ export default function HeaderClient({ initialUser }: Props) {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
+          <div className="w-8 h-8 bg-[#1A56DB] rounded-lg flex items-center justify-center text-white font-bold text-xl">
             J
           </div>
           <span className="font-display font-bold text-xl tracking-tight text-slate-900 hidden sm:block">
@@ -101,7 +101,7 @@ export default function HeaderClient({ initialUser }: Props) {
                 onClick={() => setDropdownOpen(v => !v)}
                 className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
-                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center
+                <div className="w-8 h-8 bg-[#1A56DB] text-white rounded-full flex items-center justify-center
                                 text-xs font-bold flex-shrink-0">
                   {initials}
                 </div>
@@ -170,7 +170,7 @@ export default function HeaderClient({ initialUser }: Props) {
               <Link
                 href="/auth/register"
                 className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full
-                           shadow-glow bg-primary hover:bg-primary-hover text-white transition-all"
+                           shadow-glow bg-[#1A56DB] hover:bg-[#1447C0] text-white transition-all active:scale-[0.97]"
               >
                 <span className="hidden sm:inline">Daftar</span>
                 <LogIn size={16} className="sm:hidden" />
