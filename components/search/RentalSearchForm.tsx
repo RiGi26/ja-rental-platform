@@ -110,8 +110,8 @@ export default function RentalSearchForm() {
             onClick={() => setWithDriver(d => !d)}
             className={`flex items-center justify-center h-12 px-5 rounded-xl border text-sm font-medium transition-all shadow-sm ${
               withDriver
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white border-slate-200 text-slate-600 hover:border-primary/40'
+                ? 'bg-[#1A56DB] text-white border-[#1A56DB]'
+                : 'bg-white border-slate-200 text-slate-600 hover:border-[#1A56DB]/40'
             }`}
           >
             {withDriver ? '✓ Dengan Driver' : 'Lepas Kunci'}
@@ -121,7 +121,7 @@ export default function RentalSearchForm() {
         {/* Submit */}
         <Button
           type="submit"
-          className="h-12 px-8 rounded-xl font-bold bg-primary hover:bg-primary-hover text-white shadow-glow transition-all active:scale-95 whitespace-nowrap gap-2"
+          className="h-12 px-8 rounded-xl font-bold bg-[#1A56DB] hover:bg-[#1447C0] text-white shadow-glow transition-all active:scale-95 whitespace-nowrap gap-2"
         >
           Cek Ketersediaan Mobil
           <ArrowRight size={18} />

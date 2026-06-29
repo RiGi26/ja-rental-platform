@@ -1,14 +1,15 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Bus, Car, type LucideIcon } from 'lucide-react'
 import TravelSearchForm from './TravelSearchForm'
 import RentalSearchForm from './RentalSearchForm'
 import { useHomeStore } from '@/store/useHomeStore'
 
 type Tab = 'travel' | 'rental'
 
-const tabs: { key: Tab; label: string; icon: string }[] = [
-  { key: 'travel', label: 'Travel Antar Kota', icon: '🚌' },
-  { key: 'rental', label: 'Rental Mobil', icon: '🚗' },
+const tabs: { key: Tab; label: string; icon: LucideIcon }[] = [
+  { key: 'travel', label: 'Travel Antar Kota', icon: Bus },
+  { key: 'rental', label: 'Rental Mobil', icon: Car },
 ]
 
 export default function SearchBox() {
@@ -37,7 +38,7 @@ export default function SearchBox() {
                 />
               )}
               <span className="relative flex items-center gap-2">
-                <span>{tab.icon}</span>
+                <tab.icon size={16} aria-hidden />
                 {tab.label}
               </span>
             </button>
