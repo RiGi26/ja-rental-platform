@@ -52,8 +52,8 @@ export async function GET(request: Request) {
   const { data: t } = await rental.from('tenants').select('name, slug').eq('id', tenantId).maybeSingle()
   const coreTenantId = await provisionCoreTenant({
     tenantId,
-    name: t?.name ?? (claims.tenant_slug as string) ?? 'Rental',
-    slug: t?.slug ?? (claims.tenant_slug as string) ?? undefined,
+    name: t?.name ?? 'Rental',
+    slug: t?.slug ?? undefined,
     email: user.email ?? null,
   })
   if (!coreTenantId) return langganan('error=not_provisioned')
