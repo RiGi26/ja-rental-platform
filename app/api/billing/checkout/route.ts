@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createCoreClient } from '@/lib/supabase/server'
 import { createRentalServiceClient } from '@/lib/supabase/service'
-import { getActiveTenantId } from '@/lib/tenant-entitlements'
+import { getActiveMember } from '@/lib/tenant-entitlements'
 import { signBillingToken, superadminBaseUrl } from '@/lib/billing-link'
 import { provisionCoreTenant } from '@/lib/core-provision'
 
@@ -38,14 +38,14 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL('/auth/login?next=/admin/langganan', origin))
   }
 
-  const { data: { session } } = await supabase.auth.getSession()
-  const claims = session?.access_token ? JSON.parse(atob(session.access_token.split('.')[1])) : {}
-  const role = claims.user_role as string | undefined
-  if (!['admin', 'owner', 'superadmin'].includes(role ?? '')) return langganan('error=forbidden')
   if (user.email && DEMO_EMAILS.has(user.email)) return langganan('error=demo')
 
-  const tenantId = await getActiveTenantId()
-  if (!tenantId) return langganan('error=not_provisioned')
+  // Resolve tenant + role (JWT claim or jexp tenant_members fallback — resilient to
+  // the auth hook not being enabled).
+  const member = await getActiveMember()
+  if (!member?.tenantId) return langganan('error=not_provisioned')
+  if (!['admin', 'owner', 'superadmin'].includes(member.role ?? '')) return langganan('error=forbidden')
+  const tenantId = member.tenantId
 
   // Backstop: make sure the Core billing mirror exists (idempotent, SAME-ID).
   const rental = createRentalServiceClient()
