@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createRentalServiceClient } from '@/lib/supabase/service'
+import { randomUUID } from 'crypto'
+import { createCoreServiceClient, createRentalServiceClient } from '@/lib/supabase/service'
 import { rateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit'
 import { provisionCoreTenant } from '@/lib/core-provision'
 import { tierFeatures } from '@/lib/entitlements'
@@ -7,18 +8,20 @@ import { tierFeatures } from '@/lib/entitlements'
 // ============================================================
 // POST /api/register — self-service signup for a rental business (owner).
 //
-// Single-DB reality: auth.users + tenants + tenant_members + tenant_entitlements all
-// live in the rental project (mmwud); the JWT hook custom_jwt_claims injects
-// tenant_id/user_role from tenant_members ⋈ tenants. Runs server-side with the
-// service role (the old client-side anon insert hit tenant RLS). Steps:
-//   1) create tenant (mmwud)  2) create owner auth user (email pre-confirmed so the
-//   client can sign in immediately)  3) link via tenant_members (role 'owner')
-//   4) provision the billing mirror in Core (hxhus, SAME-ID) — best-effort
-//   5) seed a trial entitlement row ONLY when provisioning succeeded
-//      (behaviour-preserving: no Core → tenant stays legacy/full-access, not a
-//       trial that expires without any checkout path).
-// The client then signs in and, for a subscribe intent, is sent to
-// /api/billing/checkout. Public route (proxy guards only /admin,/owner,/account,/driver).
+// Dual-project auth topology (verified 2026-07-02):
+//   • jexp (NEXT_PUBLIC_SUPABASE_CORE_URL) = AUTH hub: auth.users + tenants
+//     (Core-like schema: platform + plan_tier) + tenant_members. The JWT hook
+//     custom_jwt_claims runs HERE and injects tenant_id/user_role from
+//     tenant_members ⋈ tenants — so login + tenant resolution depend on jexp.
+//   • mmwud (…RENTAL…) = ops + tenant_entitlements (gating read cache; FK → its tenants).
+//   • hxhus (superadmin) = billing SoR, reached via HMAC only.
+// SAME-ID: one uuid is used across jexp + mmwud + hxhus.
+//
+// Server-side, service-role keys (bypass RLS). Order:
+//   1) jexp tenant  2) jexp auth user (email pre-confirmed)  3) jexp tenant_members
+//   4) mmwud tenant mirror  5) provision Core mirror (best-effort)
+//   6) seed mmwud trial entitlement ONLY if provisioning succeeded (else legacy).
+// Public route (proxy guards only /admin,/owner,/account,/driver).
 // ============================================================
 export const dynamic = 'force-dynamic'
 
@@ -49,65 +52,80 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Lengkapi nama usaha, email, dan password (min 8 karakter).' }, { status: 400 })
   }
 
-  // Single-DB (mmwud): auth + tenants + members + entitlements all here. Use the
-  // rental service-role client (SUPABASE_RENTAL_SERVICE_ROLE_KEY) which bypasses RLS;
-  // the "core" service client is unused in prod (auth Core = mmwud, jexp is orphan).
-  const db = createRentalServiceClient()
+  const auth = createCoreServiceClient()   // jexp: auth.users + tenants + tenant_members
+  const ops = createRentalServiceClient()  // mmwud: tenants mirror + tenant_entitlements
+  const tenantId = randomUUID()            // shared SAME-ID across jexp / mmwud / hxhus
 
-  // 1. Unique slug (globally unique in tenants).
+  // Unique slug in the auth hub (jexp tenants.slug is unique across platforms).
   for (let i = 0; i < 5; i++) {
-    const { data: clash } = await db.from('tenants').select('id').eq('slug', slug).maybeSingle()
+    const { data: clash } = await auth.from('tenants').select('id').eq('slug', slug).maybeSingle()
     if (!clash) break
     slug = `${slugify(name) || 'rental'}-${Math.random().toString(36).slice(2, 6)}`
   }
 
-  // 2. Create tenant (mmwud generates the id → used verbatim as the SAME-ID everywhere).
-  const { data: tenant, error: tErr } = await db
-    .from('tenants')
-    .insert({ name, slug, plan: 'starter', status: 'trial' })
-    .select('id')
-    .single()
-  if (tErr || !tenant) {
-    console.error('[register] tenant insert failed:', tErr)
+  // 1. jexp tenant (auth hub). Core-like schema → platform + plan_tier.
+  const { error: jtErr } = await auth.from('tenants').insert({
+    id: tenantId,
+    name,
+    slug,
+    platform: 'rental',
+    status: 'trial',
+    plan_tier: 'enterprise', // trial = full Pro
+    email,
+    phone,
+  })
+  if (jtErr) {
+    console.error('[register] jexp tenant insert failed:', jtErr)
     return NextResponse.json({ error: 'Gagal membuat akun. Coba lagi.' }, { status: 500 })
   }
-  const tenantId = tenant.id as string
 
-  // 3. Create the owner auth user (email pre-confirmed for immediate sign-in).
-  const { data: created, error: uErr } = await db.auth.admin.createUser({
+  // 2. jexp auth user (email pre-confirmed → immediate sign-in).
+  const { data: created, error: uErr } = await auth.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
     user_metadata: { full_name: `${name} Admin`, role: 'owner', tenant_id: tenantId },
   })
   if (uErr || !created?.user) {
-    // Roll back the orphan tenant so a retry with the same slug/email is clean.
-    await db.from('tenants').delete().eq('id', tenantId)
+    await auth.from('tenants').delete().eq('id', tenantId)
     const dup = (uErr?.message ?? '').toLowerCase().includes('already')
     return NextResponse.json(
       { error: dup ? 'Email sudah terdaftar. Silakan login.' : 'Gagal membuat akun pengguna.' },
       { status: dup ? 409 : 500 },
     )
   }
+  const userId = created.user.id
 
-  // 4. Link user → tenant so the JWT hook injects tenant_id/user_role.
-  const { error: mErr } = await db
+  // 3. jexp tenant_members → JWT hook injects tenant_id/user_role on login.
+  const { error: mErr } = await auth
     .from('tenant_members')
-    .insert({ tenant_id: tenantId, user_id: created.user.id, role: 'owner' })
+    .insert({ tenant_id: tenantId, user_id: userId, role: 'owner' })
   if (mErr) {
-    console.error('[register] tenant_members insert failed:', mErr)
-    await db.auth.admin.deleteUser(created.user.id).catch(() => {})
-    await db.from('tenants').delete().eq('id', tenantId)
+    console.error('[register] jexp tenant_members insert failed:', mErr)
+    await auth.auth.admin.deleteUser(userId).catch(() => {})
+    await auth.from('tenants').delete().eq('id', tenantId)
     return NextResponse.json({ error: 'Gagal menautkan akun. Coba lagi.' }, { status: 500 })
+  }
+
+  // 4. mmwud tenant mirror (same id) — FK target for entitlements + ops data.
+  const { error: rtErr } = await ops
+    .from('tenants')
+    .insert({ id: tenantId, name, slug, plan: 'starter', status: 'trial' })
+  if (rtErr) {
+    console.error('[register] mmwud tenant insert failed:', rtErr)
+    await auth.auth.admin.deleteUser(userId).catch(() => {})
+    await auth.from('tenant_members').delete().eq('tenant_id', tenantId)
+    await auth.from('tenants').delete().eq('id', tenantId)
+    return NextResponse.json({ error: 'Gagal menyiapkan akun. Coba lagi.' }, { status: 500 })
   }
 
   // 5. Provision the billing mirror in Core (SAME-ID, best-effort).
   const coreTenantId = await provisionCoreTenant({ tenantId, name, slug, email, phone })
 
-  // 6. Seed a trial entitlement ONLY when Core provisioning succeeded (else stay legacy).
+  // 6. Seed a trial entitlement ONLY when Core provisioning succeeded (else legacy/full access).
   if (coreTenantId) {
     const planExpiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
-    const { error: eErr } = await db.from('tenant_entitlements').upsert(
+    const { error: eErr } = await ops.from('tenant_entitlements').upsert(
       {
         tenant_id: tenantId,
         tier: 'pro', // trial = full Pro (Core enterprise → rental "pro")
