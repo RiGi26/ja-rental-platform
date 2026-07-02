@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createCoreServiceClient, createRentalServiceClient } from '@/lib/supabase/service'
+import { createRentalServiceClient } from '@/lib/supabase/service'
 import { rateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit'
 import { provisionCoreTenant } from '@/lib/core-provision'
 import { tierFeatures } from '@/lib/entitlements'
@@ -49,17 +49,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Lengkapi nama usaha, email, dan password (min 8 karakter).' }, { status: 400 })
   }
 
-  const core = createCoreServiceClient()
+  // Single-DB (mmwud): auth + tenants + members + entitlements all here. Use the
+  // rental service-role client (SUPABASE_RENTAL_SERVICE_ROLE_KEY) which bypasses RLS;
+  // the "core" service client is unused in prod (auth Core = mmwud, jexp is orphan).
+  const db = createRentalServiceClient()
 
   // 1. Unique slug (globally unique in tenants).
   for (let i = 0; i < 5; i++) {
-    const { data: clash } = await core.from('tenants').select('id').eq('slug', slug).maybeSingle()
+    const { data: clash } = await db.from('tenants').select('id').eq('slug', slug).maybeSingle()
     if (!clash) break
     slug = `${slugify(name) || 'rental'}-${Math.random().toString(36).slice(2, 6)}`
   }
 
   // 2. Create tenant (mmwud generates the id → used verbatim as the SAME-ID everywhere).
-  const { data: tenant, error: tErr } = await core
+  const { data: tenant, error: tErr } = await db
     .from('tenants')
     .insert({ name, slug, plan: 'starter', status: 'trial' })
     .select('id')
@@ -71,7 +74,7 @@ export async function POST(request: Request) {
   const tenantId = tenant.id as string
 
   // 3. Create the owner auth user (email pre-confirmed for immediate sign-in).
-  const { data: created, error: uErr } = await core.auth.admin.createUser({
+  const { data: created, error: uErr } = await db.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
@@ -79,7 +82,7 @@ export async function POST(request: Request) {
   })
   if (uErr || !created?.user) {
     // Roll back the orphan tenant so a retry with the same slug/email is clean.
-    await core.from('tenants').delete().eq('id', tenantId)
+    await db.from('tenants').delete().eq('id', tenantId)
     const dup = (uErr?.message ?? '').toLowerCase().includes('already')
     return NextResponse.json(
       { error: dup ? 'Email sudah terdaftar. Silakan login.' : 'Gagal membuat akun pengguna.' },
@@ -88,13 +91,13 @@ export async function POST(request: Request) {
   }
 
   // 4. Link user → tenant so the JWT hook injects tenant_id/user_role.
-  const { error: mErr } = await core
+  const { error: mErr } = await db
     .from('tenant_members')
     .insert({ tenant_id: tenantId, user_id: created.user.id, role: 'owner' })
   if (mErr) {
     console.error('[register] tenant_members insert failed:', mErr)
-    await core.auth.admin.deleteUser(created.user.id).catch(() => {})
-    await core.from('tenants').delete().eq('id', tenantId)
+    await db.auth.admin.deleteUser(created.user.id).catch(() => {})
+    await db.from('tenants').delete().eq('id', tenantId)
     return NextResponse.json({ error: 'Gagal menautkan akun. Coba lagi.' }, { status: 500 })
   }
 
@@ -104,8 +107,7 @@ export async function POST(request: Request) {
   // 6. Seed a trial entitlement ONLY when Core provisioning succeeded (else stay legacy).
   if (coreTenantId) {
     const planExpiresAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
-    const rental = createRentalServiceClient()
-    const { error: eErr } = await rental.from('tenant_entitlements').upsert(
+    const { error: eErr } = await db.from('tenant_entitlements').upsert(
       {
         tenant_id: tenantId,
         tier: 'pro', // trial = full Pro (Core enterprise → rental "pro")
