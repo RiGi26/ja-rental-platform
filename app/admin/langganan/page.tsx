@@ -9,7 +9,7 @@ import { superadminBaseUrl } from '@/lib/billing-link'
 // (/api/billing/upgrade) and hands off to the superadmin payment page. Core DB is
 // SoR; prices come from its public /api/public/plans feed.
 //
-// Rental tenants live under the Core `travel` platform (shared travel pricing).
+// Rental tenants live under the Core `rental` platform.
 // UI follows the canonical portal billing standard (see /wire-self-billing SOP):
 // Apple blue accent, rounded-[20px] cards, pill CTAs. Status-semantic colors
 // (trial=amber, active=green, expired/past_due=red) are kept on purpose.
@@ -40,13 +40,13 @@ const ERROR_NOTE: Record<string, string> = {
   billing_link_unavailable: 'Pembayaran online belum aktif. Hubungi kami untuk berlangganan.',
 }
 
-async function fetchTravelPlans(): Promise<PublicPlan[]> {
+async function fetchRentalPlans(): Promise<PublicPlan[]> {
   try {
     const res = await fetch(`${superadminBaseUrl()}/api/public/plans`, { next: { revalidate: 300 } })
     if (!res.ok) return []
     const data = (await res.json()) as { plans?: PublicPlan[] }
     return (data.plans ?? [])
-      .filter((p) => p.platform === 'travel')
+      .filter((p) => p.platform === 'rental')
       .sort((a, b) => (TIER_ORDER[a.tier] ?? 9) - (TIER_ORDER[b.tier] ?? 9))
   } catch {
     return []
@@ -69,7 +69,7 @@ export default async function LanggananPage({
     tenantId
       ? getTenantEntitlements(tenantId)
       : Promise.resolve({ tier: null, entitlements: [], maxActiveUnits: null, status: 'legacy' as const }),
-    fetchTravelPlans(),
+    fetchRentalPlans(),
     searchParams,
   ])
 
