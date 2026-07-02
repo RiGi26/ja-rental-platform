@@ -18,7 +18,7 @@ import { cache } from 'react'
 import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { createCoreClient } from '@/lib/supabase/server'
-import { createRentalServiceClient } from '@/lib/supabase/service'
+import { createCoreServiceClient, createRentalServiceClient } from '@/lib/supabase/service'
 import {
   ALL_FEATURES,
   FEATURE_LABEL,
@@ -43,17 +43,45 @@ const LEGACY: TenantEntitlements = {
   status: 'legacy',
 }
 
-/** Resolve the active tenant id from the Core JWT claim (auth hub). */
-export const getActiveTenantId = cache(async (): Promise<string | null> => {
+export type ActiveMember = { tenantId: string; role: string | null }
+
+/**
+ * Resolve the active tenant + role for the logged-in user. JWT-first (claims injected
+ * by the jexp custom_access_token hook), with a DB fallback to jexp tenant_members
+ * when the hook isn't injecting claims — same resilience the /admin layouts use, so
+ * billing works whether or not the auth hook is enabled. Returns null when there is
+ * no session or the user isn't a member of any tenant.
+ */
+export const getActiveMember = cache(async (): Promise<ActiveMember | null> => {
   const supabase = await createCoreClient()
   const { data: { session } } = await supabase.auth.getSession()
   if (!session?.access_token) return null
+
+  // JWT-first.
   try {
     const payload = JSON.parse(atob(session.access_token.split('.')[1]))
-    return (payload.tenant_id ?? payload.linked_tenant_id ?? null) as string | null
+    const tid = (payload.tenant_id ?? payload.linked_tenant_id) as string | undefined
+    if (tid) return { tenantId: tid, role: (payload.user_role as string) ?? null }
   } catch {
-    return null
+    /* fall through to DB */
   }
+
+  // Fallback: hook not injecting claims → read tenant_members from the auth hub (jexp).
+  const uid = session.user?.id
+  if (!uid) return null
+  const core = createCoreServiceClient()
+  const { data } = await core
+    .from('tenant_members')
+    .select('tenant_id, role')
+    .eq('user_id', uid)
+    .maybeSingle()
+  if (!data?.tenant_id) return null
+  return { tenantId: data.tenant_id as string, role: (data.role as string) ?? null }
+})
+
+/** Resolve the active tenant id (JWT claim or jexp tenant_members fallback). */
+export const getActiveTenantId = cache(async (): Promise<string | null> => {
+  return (await getActiveMember())?.tenantId ?? null
 })
 
 /**
