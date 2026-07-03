@@ -101,7 +101,8 @@ export default function RentalManager({ rentals, vehicles }: Props) {
         {rentals.length === 0 ? (
           <div className="py-14 text-center text-slate-400 text-sm">Belum ada sewa. Klik “Buat Sewa Baru”.</div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 text-left text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -181,6 +182,92 @@ export default function RentalManager({ rentals, vehicles }: Props) {
               </tbody>
             </table>
           </div>
+
+          <div className="lg:hidden space-y-3">
+            {rentals.map((r) => {
+              const done = r.status === 'completed' || r.status === 'cancelled'
+              return (
+                <div key={r.bookingId} className="rounded-xl border border-slate-100 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="font-mono text-xs text-slate-400">{r.bookingCode}</div>
+                      <div className="font-bold text-slate-900">{r.renterName ?? '—'}</div>
+                      {r.renterPhone && <div className="text-xs text-slate-500">{r.renterPhone}</div>}
+                    </div>
+                    <span className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${statusColor(r.status)}`}>
+                      {STATUS_LABEL[r.status] ?? r.status}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 space-y-1.5">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-xs font-semibold text-slate-500">Unit</span>
+                      <span className="text-right text-sm text-slate-800">
+                        {r.vehicleLabel}
+                        {r.plate && <span className="block text-xs text-slate-400">{r.plate}</span>}
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-xs font-semibold text-slate-500">Periode</span>
+                      <span className="text-right text-sm text-slate-800">
+                        {r.startDate ? formatDateShort(r.startDate) : '—'} <span className="text-slate-400">s/d</span> {r.endDate ? formatDateShort(r.endDate) : '—'}
+                        {r.actualReturnDate && <span className="block text-xs text-slate-400">Kembali: {formatDateShort(r.actualReturnDate)}</span>}
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-xs font-semibold text-slate-500">Total</span>
+                      <span className="text-right text-sm font-semibold tabular-nums text-slate-900">{formatRupiah(r.total)}</span>
+                    </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-xs font-semibold text-slate-500">Deposit</span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-sm tabular-nums text-slate-800">{formatRupiah(r.depositAmount)}</span>
+                        {r.detailId && (
+                          <select
+                            value={r.depositStatus ?? 'held'}
+                            disabled={pending}
+                            onChange={(e) => run(() => updateDepositStatus(r.detailId!, r.bookingId, e.target.value as any), 'Status deposit diperbarui.')}
+                            className="rounded-lg border border-slate-200 bg-white px-1.5 py-1 text-xs text-slate-600 disabled:opacity-50"
+                            aria-label="Status deposit"
+                          >
+                            <option value="held">Ditahan</option>
+                            <option value="returned">Dikembalikan</option>
+                            <option value="deducted">Dipotong</option>
+                          </select>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-xs font-semibold text-slate-500">Denda</span>
+                      <span className="text-right text-sm">
+                        {r.lateFeeAmount > 0
+                          ? <><span className="tabular-nums text-red-600">{formatRupiah(r.lateFeeAmount)}</span><span className="block text-xs text-slate-400">{LATE_LABEL[r.lateFeeStatus ?? 'pending']}</span></>
+                          : <span className="text-slate-300">—</span>}
+                      </span>
+                    </div>
+                  </div>
+
+                  {!done && (
+                    <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+                      {r.detailId && (
+                        <button
+                          onClick={() => setReturnFor(r)}
+                          disabled={pending}
+                          className="flex-1 rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+                        >Kembalikan</button>
+                      )}
+                      <button
+                        onClick={() => { if (confirm(`Batalkan sewa ${r.bookingCode}?`)) run(() => cancelRentalBooking(r.bookingId), 'Sewa dibatalkan.') }}
+                        disabled={pending}
+                        className="flex-1 rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 disabled:opacity-50"
+                      >Batal</button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          </>
         )}
       </div>
 

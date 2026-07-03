@@ -35,7 +35,8 @@ export default function TrackingTable({ schedules }: Props) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <>
+    <div className="hidden lg:block overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-slate-100">
@@ -82,5 +83,50 @@ export default function TrackingTable({ schedules }: Props) {
         </tbody>
       </table>
     </div>
+
+    {/* Mobile: card fallback (chrome flat — no bg-white/shadow, parent panel already provides it) */}
+    <div className="lg:hidden space-y-3">
+      {schedules.map(s => {
+        const cfg = statusConfig[s.status] ?? statusConfig.scheduled
+        const seatsTaken = s.seats_total - s.seats_available
+        return (
+          <div key={s.id} className="rounded-xl border border-slate-100 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-bold text-slate-900">{s.vehicle?.plate ?? '-'}</p>
+                <p className="text-xs text-slate-400">{s.vehicle?.brand} {s.vehicle?.model}</p>
+              </div>
+              <span
+                className="inline-block shrink-0 text-xs font-bold px-3 py-1 rounded-full"
+                style={{ background: cfg.bg, color: cfg.text }}
+              >
+                {cfg.label}
+              </span>
+            </div>
+            <div className="mt-3 space-y-2">
+              <div className="flex justify-between gap-3">
+                <span className="text-xs font-semibold text-slate-500">Driver</span>
+                <span className="text-sm text-slate-800 text-right">{s.driver?.name ?? 'Belum assign'}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-xs font-semibold text-slate-500">Rute</span>
+                <span className="text-sm text-slate-800 text-right">
+                  {s.route?.origin ?? '-'} → {s.route?.destination ?? '-'}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-xs font-semibold text-slate-500">Penumpang</span>
+                <span className="text-sm text-slate-800 text-right tabular-nums">{seatsTaken}/{s.seats_total}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-xs font-semibold text-slate-500">Jam</span>
+                <span className="text-sm text-slate-800 text-right">{formatTime(s.depart_at)}</span>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+    </>
   )
 }

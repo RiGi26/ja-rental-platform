@@ -30,8 +30,9 @@ export default async function AdminDriversPage() {
           </p>
         </div>
       ) : (
+        <>
         <div
-          className="bg-white overflow-hidden"
+          className="hidden lg:block bg-white overflow-hidden"
           style={{ borderRadius: 24, boxShadow: '0 5px 18px rgba(15,23,42,0.05)' }}
         >
           <table className="w-full text-sm">
@@ -86,6 +87,59 @@ export default async function AdminDriversPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile card fallback */}
+        <div className="lg:hidden space-y-3">
+          {drivers.map(d => {
+            const cfg = statusConfig[d.status] ?? statusConfig.inactive
+            return (
+              <div
+                key={d.id}
+                className="rounded-2xl bg-white p-4"
+                style={{ boxShadow: '0 5px 18px rgba(15,23,42,0.05)' }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                      style={{ background: 'linear-gradient(135deg, #2563eb, #3b82f6)' }}
+                    >
+                      {d.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-slate-900 truncate">{d.name}</p>
+                      <p className="text-xs text-slate-400">{d.phone}</p>
+                    </div>
+                  </div>
+                  <span
+                    className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
+                    style={{ background: cfg.bg, color: cfg.text }}
+                  >
+                    {cfg.label}
+                  </span>
+                </div>
+
+                <div className="mt-3 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-slate-500">No. Lisensi</span>
+                    <span className="font-mono text-slate-800">{d.license_no}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-slate-500">Rating</span>
+                    <span className="font-bold text-slate-800">⭐ {d.avg_rating?.toFixed(1) ?? '-'}</span>
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                  <button className="w-full h-9 rounded-xl text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors">
+                    Jadwal
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        </>
       )}
     </div>
   )

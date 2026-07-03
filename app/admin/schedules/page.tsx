@@ -53,8 +53,9 @@ export default async function AdminSchedulesPage() {
           <p className="text-slate-400">Belum ada jadwal terdaftar.</p>
         </div>
       ) : (
+        <>
         <div
-          className="bg-white overflow-hidden"
+          className="hidden lg:block bg-white overflow-hidden"
           style={{ borderRadius: 24, boxShadow: '0 5px 18px rgba(15,23,42,0.05)' }}
         >
           <table className="w-full text-sm">
@@ -107,6 +108,55 @@ export default async function AdminSchedulesPage() {
             </tbody>
           </table>
         </div>
+
+        <div className="lg:hidden space-y-3">
+          {schedules.map(s => {
+            const cfg   = statusConfig[s.status] ?? statusConfig.scheduled
+            const taken = s.seats_total - s.seats_available
+            return (
+              <div
+                key={s.id}
+                className="rounded-2xl bg-white p-4"
+                style={{ boxShadow: '0 5px 18px rgba(15,23,42,0.05)' }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-bold text-slate-900">
+                    {s.route?.origin ?? '-'} → {s.route?.destination ?? '-'}
+                  </p>
+                  <span
+                    className="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full"
+                    style={{ background: cfg.bg, color: cfg.text }}
+                  >
+                    {cfg.label}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-slate-400">
+                  {formatDate(s.depart_at)} · {formatTime(s.depart_at)} WIB
+                </p>
+
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold text-slate-500">Armada / Driver</span>
+                    <span className="text-slate-800 text-right">
+                      {s.vehicle?.plate ?? '-'} · {s.driver?.name ?? 'Belum assign'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold text-slate-500">Kursi</span>
+                    <span className="text-slate-800">{taken}/{s.seats_total} · {s.seats_available} tersisa</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs font-semibold text-slate-500">Harga</span>
+                    <span className="font-bold text-slate-800">
+                      Rp {((s.price_adult ?? s.price) / 1000).toFixed(0)}k
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        </>
       )}
     </div>
   )

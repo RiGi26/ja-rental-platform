@@ -92,13 +92,13 @@ export default function BookingTable({ bookings }: Props) {
           placeholder="Cari kode / nama penumpang..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="ml-auto border border-slate-200 rounded-xl px-4 py-2 text-sm w-64
+          className="w-full sm:w-64 sm:ml-auto border border-slate-200 rounded-xl px-4 py-2 text-sm
                      focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
         />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      {/* Table (desktop) */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100">
@@ -175,6 +175,81 @@ export default function BookingTable({ bookings }: Props) {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Cards (mobile) */}
+      <div className="lg:hidden space-y-3">
+        {filtered.length === 0 ? (
+          <div className="rounded-xl border border-slate-100 p-4 text-center text-slate-400 text-sm">
+            Tidak ada booking di kategori ini.
+          </div>
+        ) : filtered.map(b => {
+          const sched = b.schedule as { id: string; depart_at: string; route: { origin: string; destination: string } | null } | null
+          return (
+            <div key={b.id} className="rounded-xl border border-slate-100 p-4">
+              {/* Kode + status */}
+              <div className="flex items-start justify-between gap-3">
+                <span className="font-mono text-sm font-bold text-slate-900">{b.booking_code}</span>
+                <BookingStatusBadge status={b.status as BookingStatus} />
+              </div>
+
+              {/* Rute */}
+              <p className="mt-1 font-medium text-slate-800">
+                {sched?.route?.origin ?? '-'} → {sched?.route?.destination ?? '-'}
+              </p>
+              {sched?.depart_at && (
+                <p className="text-xs text-slate-400">{formatDate(sched.depart_at)}</p>
+              )}
+
+              {/* Detail kolom */}
+              <div className="mt-3 space-y-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-xs font-semibold text-slate-500">Penumpang</span>
+                  <span className="text-right text-slate-800">
+                    {b.passengers[0]?.name ?? '-'}
+                    {b.passengers.length > 1 && (
+                      <span className="text-xs text-slate-400"> +{b.passengers.length - 1} lainnya</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-semibold text-slate-500">Tanggal</span>
+                  <span className="text-slate-800 text-xs">{formatDate(b.created_at)}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-semibold text-slate-500">Total</span>
+                  <span className="font-bold text-slate-800">{formatRupiah(b.total_amount)}</span>
+                </div>
+              </div>
+
+              {/* Aksi */}
+              {(b.payment_status === 'pending' || (b.status !== 'cancelled' && b.status !== 'completed')) && (
+                <div className="mt-4 flex items-center gap-2">
+                  {b.payment_status === 'pending' && (
+                    <button
+                      onClick={() => handleConfirm(b.id)}
+                      disabled={pending}
+                      className="flex-1 text-sm font-bold px-3 py-2 rounded-lg transition-colors text-white"
+                      style={{ background: '#16a34a' }}
+                    >
+                      Konfirmasi
+                    </button>
+                  )}
+                  {b.status !== 'cancelled' && b.status !== 'completed' && (
+                    <button
+                      onClick={() => handleCancel(b.id)}
+                      disabled={pending}
+                      className="flex-1 text-sm font-semibold px-3 py-2 rounded-lg transition-colors
+                                 bg-red-50 text-red-600 hover:bg-red-100"
+                    >
+                      Batalkan
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
