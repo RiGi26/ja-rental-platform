@@ -261,3 +261,44 @@ body {
     @apply font-sans;
   }
 }
+/* ─── Onboarding product tour (driver.js) — match admin chrome ──── */
+.ja-tour.driver-popover {
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.16);
+  padding: 18px;
+}
+.ja-tour .driver-popover-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.ja-tour .driver-popover-description {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #64748b;
+}
+.ja-tour .driver-popover-progress-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+.ja-tour .driver-popover-next-btn,
+.ja-tour .driver-popover-prev-btn {
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  text-shadow: none;
+}
+.ja-tour .driver-popover-next-btn {
+  background-color: #1a56db;
+  color: #fff;
+  border: 1px solid #1a56db;
+}
+.ja-tour .driver-popover-next-btn:hover {
+  background-color: #1543ad;
+}
+.ja-tour .driver-popover-prev-btn {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid transparent;
+}

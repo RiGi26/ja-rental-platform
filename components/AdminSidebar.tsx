@@ -7,20 +7,21 @@ import { X } from 'lucide-react'
 import { createCoreClient } from '@/lib/supabase/client'
 import type { EntitlementKey } from '@/lib/entitlements'
 
-type MenuItem = { icon: string; label: string; href: string; ent?: EntitlementKey }
+/** `tour` (optional) = data-tour anchor key for the onboarding product tour. */
+type MenuItem = { icon: string; label: string; href: string; ent?: EntitlementKey; tour?: string }
 
 const menuItems: MenuItem[] = [
   { icon: '📊', label: 'Dashboard',        href: '/admin' },
-  { icon: '🚐', label: 'Armada',           href: '/admin/fleet' },
+  { icon: '🚐', label: 'Armada',           href: '/admin/fleet', tour: 'nav-fleet' },
   { icon: '📍', label: 'Live Tracking',    href: '/admin/tracking', ent: 'gps_tracking' },
   { icon: '🛣️', label: 'Rute Tetap',      href: '/admin/routes' },
   { icon: '👨‍✈️', label: 'Driver & Karyawan', href: '/admin/drivers' },
-  { icon: '📅', label: 'Jadwal',           href: '/admin/schedules' },
-  { icon: '📋', label: 'Booking',          href: '/admin/bookings' },
+  { icon: '📅', label: 'Jadwal',           href: '/admin/schedules', tour: 'nav-schedules' },
+  { icon: '📋', label: 'Booking',          href: '/admin/bookings', tour: 'nav-bookings' },
   { icon: '💳', label: 'Pembayaran',       href: '/admin/bookings?tab=payment', ent: 'online_payment' },
   { icon: '📈', label: 'Laporan',          href: '/admin/reports', ent: 'reports' },
   { icon: '🔧', label: 'Reminder Servis',  href: '/admin/fleet?tab=reminder' },
-  { icon: '🧾', label: 'Langganan',         href: '/admin/langganan' },
+  { icon: '🧾', label: 'Langganan',         href: '/admin/langganan', tour: 'nav-billing' },
   { icon: '⚙️', label: 'Pengaturan',      href: '/admin/settings' },
 ]
 
@@ -85,6 +86,7 @@ export default function AdminSidebar({ entitlements }: { entitlements?: Entitlem
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
+                data-tour={item.tour}
                 className={`flex items-center gap-3.5 px-[18px] py-3.5 rounded-[18px] text-sm
                             font-semibold transition-all duration-200 group
                             ${active ? 'text-white shadow-md' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}`}
