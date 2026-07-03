@@ -18,6 +18,7 @@ const menuItems: MenuItem[] = [
   { icon: '👨‍✈️', label: 'Driver & Karyawan', href: '/admin/drivers' },
   { icon: '📅', label: 'Jadwal',           href: '/admin/schedules', tour: 'nav-schedules' },
   { icon: '📋', label: 'Booking',          href: '/admin/bookings', tour: 'nav-bookings' },
+  { icon: '🚗', label: 'Rental Self-Drive', href: '/admin/rental', ent: 'selfdrive', tour: 'nav-rental' },
   { icon: '💳', label: 'Pembayaran',       href: '/admin/bookings?tab=payment', ent: 'online_payment' },
   { icon: '📈', label: 'Laporan',          href: '/admin/reports', ent: 'reports' },
   { icon: '🔧', label: 'Reminder Servis',  href: '/admin/fleet?tab=reminder' },
