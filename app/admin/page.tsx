@@ -11,6 +11,8 @@ import QuickActions         from '@/components/admin/QuickActions'
 import VehicleReminderList  from '@/components/admin/VehicleReminderList'
 import DriverPerformanceList from '@/components/admin/DriverPerformanceList'
 import { UpsellBanner }      from '@/components/UpsellBanner'
+import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
+import { getOnboardingState } from '@/lib/onboarding/state'
 import { formatRupiah }     from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Dashboard Admin' }
@@ -33,16 +35,27 @@ export default async function AdminDashboardPage({
   searchParams: Promise<{ upsell?: string; billing?: string }>
 }) {
   const { upsell, billing } = await searchParams
-  const [stats, schedules, reminders, drivers] = await Promise.all([
+  const [stats, schedules, reminders, drivers, onboarding] = await Promise.all([
     getAdminDashboardStats(),
     getActiveSchedules(),
     getVehicleReminders(),
     getDriverPerformance(),
+    getOnboardingState(), // shares the layout's computation via React cache()
   ])
 
   return (
     <div className="space-y-6 animate-fade-up">
       <UpsellBanner upsell={upsell} billing={billing} />
+
+      {/* Onboarding "Misi Pertama" — per-user, derived from real data */}
+      {onboarding.checklistVisible && (
+        <OnboardingChecklist
+          items={onboarding.items}
+          completed={onboarding.completed}
+          total={onboarding.total}
+          progress={onboarding.progress}
+        />
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

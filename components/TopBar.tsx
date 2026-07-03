@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu, Bell } from 'lucide-react'
+import { Menu, Bell, HelpCircle } from 'lucide-react'
 import { useLayoutStore } from '@/store/useLayoutStore'
 
 interface Props {
@@ -37,6 +37,16 @@ export default function TopBar({ userName = 'Admin' }: Props) {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Help — replay the onboarding tour anytime (OnboardingLauncher listens) */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('onboarding:replay-tour'))}
+          data-coach="help-button"
+          aria-label="Panduan — putar ulang tur"
+          title="Panduan portal"
+          className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+        >
+          <HelpCircle size={19} />
+        </button>
         <button aria-label="Notifikasi" className="relative p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
           <Bell size={19} />
         </button>

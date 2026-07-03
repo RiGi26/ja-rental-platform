@@ -1,9 +1,11 @@
 import Link from 'next/link'
 
+// `tour` = duplicate data-tour anchors for the onboarding tour on mobile, where the
+// drawer-hidden sidebar is off-screen (visible.ts picks the reachable anchor).
 const actions = [
-  { label: '+ Booking Baru',  color: 'blue',   href: '/admin/bookings' },
-  { label: 'Input Armada',    color: 'purple',  href: '/admin/fleet' },
-  { label: 'Kelola Jadwal',   color: 'green',   href: '/admin/schedules' },
+  { label: '+ Booking Baru',  color: 'blue',   href: '/admin/bookings', tour: 'nav-bookings' },
+  { label: 'Input Armada',    color: 'purple',  href: '/admin/fleet', tour: 'nav-fleet' },
+  { label: 'Kelola Jadwal',   color: 'green',   href: '/admin/schedules', tour: 'nav-schedules' },
   { label: 'Monitoring GPS',  color: 'orange',  href: '/admin/tracking' },
   { label: 'Kirim Invoice',   color: 'blue',    href: '/admin/bookings?tab=invoice' },
   { label: 'Lihat Laporan',   color: 'green',   href: '/admin/reports' },
@@ -27,6 +29,7 @@ export default function QuickActions() {
           <Link
             key={a.label}
             href={a.href}
+            data-tour={'tour' in a ? a.tour : undefined}
             className="flex items-center justify-center text-center text-sm font-bold
                        py-[18px] px-4 transition-all duration-200 hover:-translate-y-0.5
                        active:scale-[0.96] shadow-sm hover:shadow-md"
