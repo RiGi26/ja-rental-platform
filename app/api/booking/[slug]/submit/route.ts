@@ -155,7 +155,10 @@ export async function POST(
   }
 
   const vehicleLabel = `${vehicle.brand ?? ''} ${vehicle.model ?? ''}`.trim() || (vehicle.plate as string)
-  const finishUrl = RETURN_URL_RE.test(returnUrl) ? returnUrl : undefined
+  // return_url dari situs = BASE halaman status (situs belum tahu kode booking saat
+  // submit) → kode ditempel di sini: {base}/{bookingCode}.
+  const finishBase = RETURN_URL_RE.test(returnUrl) ? returnUrl.replace(/\/+$/, '') : null
+  const finishUrl = finishBase ? `${finishBase}/${bookingCode}` : undefined
 
   let snapToken = ''
   let redirectUrl = ''
