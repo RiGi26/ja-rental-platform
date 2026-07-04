@@ -19,6 +19,8 @@ export interface SnapTokenParams {
   customerEmail: string
   customerPhone: string
   items: { id: string; name: string; price: number; quantity: number }[]
+  /** URL "kembali ke merchant" setelah bayar (callbacks.finish) — dipakai booking web rental. */
+  finishUrl?:    string
 }
 
 export async function createSnapToken(
@@ -43,6 +45,7 @@ export async function createSnapToken(
     },
     item_details: params.items,
     expiry: { unit: 'hours', duration: 2 },
+    ...(params.finishUrl ? { callbacks: { finish: params.finishUrl } } : {}),
   })
 
   return { token: res.token, redirectUrl: res.redirect_url }

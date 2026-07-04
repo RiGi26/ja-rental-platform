@@ -158,8 +158,13 @@ export default function RentalManager({ rentals, vehicles }: Props) {
                           : <span className="text-slate-300">—</span>}
                       </td>
                       <td className="py-3.5 pr-4">
-                        <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${statusColor(r.status)}`}>
-                          {STATUS_LABEL[r.status] ?? r.status}
+                        <span className="inline-flex flex-wrap items-center gap-1">
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${statusColor(r.status)}`}>
+                            {STATUS_LABEL[r.status] ?? r.status}
+                          </span>
+                          {r.source === 'web' && (
+                            <span className="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">Web</span>
+                          )}
                         </span>
                       </td>
                       <td className="py-3.5">
@@ -194,8 +199,13 @@ export default function RentalManager({ rentals, vehicles }: Props) {
                       <div className="font-bold text-slate-900">{r.renterName ?? '—'}</div>
                       {r.renterPhone && <div className="text-xs text-slate-500">{r.renterPhone}</div>}
                     </div>
-                    <span className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${statusColor(r.status)}`}>
-                      {STATUS_LABEL[r.status] ?? r.status}
+                    <span className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${statusColor(r.status)}`}>
+                        {STATUS_LABEL[r.status] ?? r.status}
+                      </span>
+                      {r.source === 'web' && (
+                        <span className="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">Web</span>
+                      )}
                     </span>
                   </div>
 

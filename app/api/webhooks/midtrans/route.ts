@@ -1,12 +1,15 @@
 import crypto from 'crypto'
 import { createRentalServiceClient } from '@/lib/supabase/service'
+import { isMockMode } from '@/lib/midtrans'
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
     const supabase = createRentalServiceClient()
 
-    const isMock = body.mock === true
+    // Bypass mock hanya boleh saat server memang mode mock (tanpa server key).
+    // Tanpa gate ini siapa pun bisa menandai booking "paid" via {mock:true}.
+    const isMock = body.mock === true && isMockMode
 
     if (!isMock) {
       const serverKey = process.env.MIDTRANS_SERVER_KEY ?? ''

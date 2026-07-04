@@ -2,6 +2,7 @@
 
 import { createRentalServiceClient } from '@/lib/supabase/service'
 import { getActiveTenantId, getTenantEntitlements, hasEntitlement } from '@/lib/tenant-entitlements'
+import { findDateConflict, genBookingCode } from '@/lib/rental/booking'
 import { daysBetween } from '@/lib/utils'
 
 // ============================================================
@@ -11,8 +12,6 @@ import { daysBetween } from '@/lib/utils'
 // harga & denda dihitung/di-clamp di server. Client memicu router.refresh() setelah
 // mutasi (konvensi repo — bukan revalidatePath).
 // ============================================================
-
-const ACTIVE_STATUSES = ['pending_payment', 'paid', 'confirmed', 'otw_pickup', 'on_trip', 'almost_arrived'] as const
 
 async function requireSelfdrive(): Promise<{ tenantId?: string; error?: string }> {
   const tenantId = await getActiveTenantId()
@@ -39,6 +38,8 @@ export interface RentalRow {
   bookingCode: string
   status: string
   paymentStatus: string
+  /** Kanal asal booking: 'walk_in' (admin) | 'web' (situs publik). */
+  source: string
   total: number
   vehicleLabel: string
   plate: string
@@ -74,7 +75,7 @@ export async function getRentalBookings(): Promise<RentalRow[]> {
   const { data } = await supabase
     .from('bookings')
     .select(`
-      id, booking_code, status, payment_status, total, vehicle_id,
+      id, booking_code, status, payment_status, source, total, vehicle_id,
       vehicle:vehicles(plate, brand, model),
       rental:rental_details(id, mode, start_date, end_date, daily_rate, deposit_amount, deposit_status,
         renter_name, renter_phone, actual_return_date, late_fee_amount, late_fee_status, notes)
@@ -91,6 +92,7 @@ export async function getRentalBookings(): Promise<RentalRow[]> {
       bookingCode: b.booking_code,
       status: b.status,
       paymentStatus: b.payment_status,
+      source: b.source ?? 'walk_in',
       total: Number(b.total) || 0,
       vehicleLabel: v ? `${v.brand ?? ''} ${v.model ?? ''}`.trim() || (v.plate ?? '—') : '—',
       plate: v?.plate ?? '—',
@@ -143,12 +145,6 @@ export interface CreateRentalInput {
   notes?: string
 }
 
-function genBookingCode(): string {
-  // 8 char alnum uppercase — mirip format travel JA-xxxxxxxx.
-  const s = Math.random().toString(36).slice(2, 10).toUpperCase().padEnd(8, '0')
-  return `JA-${s}`
-}
-
 export async function createRentalBooking(
   input: CreateRentalInput,
 ): Promise<{ success?: true; bookingCode?: string; error?: string }> {
@@ -177,22 +173,15 @@ export async function createRentalBooking(
   if (!vehicle) return { error: 'Kendaraan tidak ditemukan.' }
 
   // Guard ketersediaan: tolak bila unit punya sewa aktif yang tanggalnya bentrok.
-  const { data: activeRentals } = await supabase
-    .from('bookings')
-    .select('id, status, rental:rental_details(start_date, end_date)')
-    .eq('tenant_id', tenantId)
-    .eq('type', 'rental')
-    .eq('vehicle_id', input.vehicleId)
-    .in('status', ACTIVE_STATUSES as unknown as string[])
-
-  for (const b of activeRentals ?? []) {
-    const r = (Array.isArray((b as any).rental) ? (b as any).rental[0] : (b as any).rental) as
-      { start_date?: string; end_date?: string } | null
-    if (!r?.start_date || !r?.end_date) continue
-    // Bentrok bila: existing.start <= new.end DAN existing.end >= new.start.
-    if (r.start_date <= input.endDate && r.end_date >= input.startDate) {
-      return { error: `Kendaraan sudah tersewa pada ${r.start_date} – ${r.end_date}. Pilih tanggal atau unit lain.` }
-    }
+  // (Util bersama dengan endpoint booking publik — pending kedaluwarsa tak menghitung.)
+  const conflict = await findDateConflict(supabase, {
+    tenantId,
+    vehicleId: input.vehicleId,
+    startDate: input.startDate,
+    endDate: input.endDate,
+  })
+  if (conflict) {
+    return { error: `Kendaraan sudah tersewa pada ${conflict.start_date} – ${conflict.end_date}. Pilih tanggal atau unit lain.` }
   }
 
   // Insert booking (type='rental') → lalu rental_details.
@@ -209,6 +198,7 @@ export async function createRentalBooking(
       total,
       total_amount: total,
       seats: [],
+      source: 'walk_in',
     })
     .select('id')
     .single()
