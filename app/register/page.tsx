@@ -130,9 +130,7 @@ export default function RegisterPage() {
             <h1 className="text-2xl font-display font-black text-slate-900 tracking-tight">Webzoka <span className="text-primary">Rental PRO</span></h1>
           </Link>
           <p className="text-slate-500 font-medium italic">
-            {isSubscribe
-              ? `Daftar & aktifkan paket ${tier ? TIER_LABEL[tier] : ''} (${period === 'yearly' ? 'tahunan' : 'bulanan'}).`
-              : 'Transformasi Digital untuk Bisnis Travel & Rental Anda.'}
+            Transformasi Digital untuk Bisnis Travel & Rental Anda.
           </p>
         </div>
 
@@ -140,8 +138,19 @@ export default function RegisterPage() {
         <div className="bg-white rounded-[32px] shadow-panel border border-slate-100 overflow-hidden">
           <div className="p-8 md:p-12">
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Informasi Usaha & Akses</h2>
-              <p className="text-sm text-slate-500">Lengkapi data berikut untuk mengaktifkan sistem manajemen Anda.</p>
+              <h2 className="text-xl font-bold text-slate-900 mb-1">
+                {isSubscribe ? `Berlangganan ${tier ? TIER_LABEL[tier] : ''}` : 'Informasi Usaha & Akses'}
+              </h2>
+              <p className="text-sm text-slate-500">
+                {isSubscribe
+                  ? 'Isi data bisnis, lalu lanjut ke pembayaran'
+                  : 'Lengkapi data berikut untuk mengaktifkan sistem manajemen Anda.'}
+              </p>
+              {isSubscribe && (
+                <p className="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700">
+                  Belum siap bayar? Akun tetap mendapat trial 14 hari.
+                </p>
+              )}
             </div>
 
             <form onSubmit={handleRegister} className="space-y-5">
