@@ -2,10 +2,9 @@
 
 import { useState, useId, useEffect } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Building2, Mail, Lock, Phone, Globe, ArrowRight,
-  CheckCircle2, Loader2, ShieldCheck, Sparkles, ChevronLeft
+  Building2, Mail, Lock, Phone, User, Eye, EyeOff,
+  CheckCircle2, Loader2, ShieldCheck, Sparkles
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -17,8 +16,9 @@ const TIER_LABEL: Record<string, string> = { starter: 'Starter', pro: 'Growth', 
 
 export default function RegisterPage() {
   const id = useId()
-  const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [agreeTos, setAgreeTos] = useState(false)
 
   // Subscribe intent from /pricing (?intent=subscribe&tier=starter|pro|enterprise&period=monthly|yearly).
   const [intent, setIntent] = useState<string | null>(null)
@@ -37,44 +37,57 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     businessName: '',
     slug: '',
+    adminName: '',
     email: '',
     whatsapp: '',
     password: '',
+    confirmPassword: '',
   })
 
   const updateForm = (key: string, val: string) => {
     setFormData(prev => {
       const next = { ...prev, [key]: val }
-      if (key === 'businessName' && !prev.slug) {
+      if (key === 'businessName') {
         next.slug = val.toLowerCase().replace(/[^a-z0-9]/g, '-')
       }
       return next
     })
   }
 
-  const handleNext = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (step === 1 && (!formData.businessName || !formData.slug)) {
+
+    if (!formData.businessName || !formData.slug) {
       toast.error('Lengkapi data usaha Anda.')
       return
     }
-    setStep(s => s + 1)
-  }
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Password tidak cocok.')
+      return
+    }
+    if (!agreeTos) {
+      toast.error('Setujui syarat & ketentuan untuk melanjutkan.')
+      return
+    }
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
     setLoading(true)
 
     try {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          businessName: formData.businessName,
+          slug: formData.slug,
+          adminName: formData.adminName,
+          email: formData.email,
+          whatsapp: formData.whatsapp,
+          password: formData.password,
+        }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         toast.error(data?.error ?? 'Gagal mendaftar. Coba lagi.')
-        if (res.status === 409) setStep(2)
         setLoading(false)
         return
       }
@@ -103,9 +116,7 @@ export default function RegisterPage() {
     }
   }
 
-  const submitLabel = isSubscribe
-    ? `Daftar & Lanjut Bayar${tier ? ` — ${TIER_LABEL[tier]}` : ''}`
-    : 'Aktifkan Sistem & Mulai Trial'
+  const submitLabel = isSubscribe ? 'Daftar & Lanjut Bayar →' : 'Aktifkan Sistem & Mulai Trial'
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
@@ -127,154 +138,145 @@ export default function RegisterPage() {
 
         {/* Form Card */}
         <div className="bg-white rounded-[32px] shadow-panel border border-slate-100 overflow-hidden">
-          <div className="h-2 bg-slate-100">
-            <motion.div
-              className="h-full bg-primary"
-              initial={{ width: '0%' }}
-              animate={{ width: step === 1 ? '50%' : '100%' }}
-            />
-          </div>
-
           <div className="p-8 md:p-12">
-            <AnimatePresence mode="wait">
-              {step === 1 ? (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-slate-900 mb-1">Informasi Usaha & Akses</h2>
+              <p className="text-sm text-slate-500">Lengkapi data berikut untuk mengaktifkan sistem manajemen Anda.</p>
+            </div>
+
+            <form onSubmit={handleRegister} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-businessName`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Nama Bisnis</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <Input
+                    id={`${id}-businessName`}
+                    placeholder="Contoh: Bakso Tini Japan"
+                    value={formData.businessName}
+                    onChange={e => updateForm('businessName', e.target.value)}
+                    className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-adminName`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Nama Admin / PIC</Label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <Input
+                    id={`${id}-adminName`}
+                    placeholder="Nama lengkap Anda"
+                    value={formData.adminName}
+                    onChange={e => updateForm('adminName', e.target.value)}
+                    className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-email`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <Input
+                    id={`${id}-email`}
+                    type="email"
+                    placeholder="admin@bisnis.jp"
+                    value={formData.email}
+                    onChange={e => updateForm('email', e.target.value)}
+                    className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-whatsapp`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">No. WhatsApp (opsional)</Label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <Input
+                    id={`${id}-whatsapp`}
+                    placeholder="62812xxxxxxx"
+                    value={formData.whatsapp}
+                    onChange={e => updateForm('whatsapp', e.target.value)}
+                    className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-password`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <Input
+                    id={`${id}-password`}
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Minimal 8 karakter"
+                    value={formData.password}
+                    onChange={e => updateForm('password', e.target.value)}
+                    className="h-12 pl-12 pr-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
+                    required
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${id}-confirmPassword`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Konfirmasi Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <Input
+                    id={`${id}-confirmPassword`}
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Ulangi password"
+                    value={formData.confirmPassword}
+                    onChange={e => updateForm('confirmPassword', e.target.value)}
+                    className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
+
+              <label htmlFor={`${id}-agreeTos`} className="flex items-start gap-3 pt-1 cursor-pointer">
+                <input
+                  id={`${id}-agreeTos`}
+                  type="checkbox"
+                  checked={agreeTos}
+                  onChange={e => setAgreeTos(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/30"
+                  required
+                />
+                <span className="text-sm text-slate-500">
+                  Saya setuju dengan syarat &amp; ketentuan penggunaan Webzoka.
+                </span>
+              </label>
+
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-14 rounded-xl bg-slate-900 hover:bg-black text-white font-bold gap-2 shadow-lg transition-all active:scale-95"
                 >
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold text-slate-900 mb-1">Informasi Usaha</h2>
-                    <p className="text-sm text-slate-500">Mulai langkah awal untuk sistem manajemen Anda.</p>
-                  </div>
-
-                  <form onSubmit={handleNext} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor={`${id}-businessName`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Nama Rental / Travel</Label>
-                      <div className="relative">
-                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                        <Input
-                          id={`${id}-businessName`}
-                          placeholder="Contoh: Arjuna Rent Car"
-                          value={formData.businessName}
-                          onChange={e => updateForm('businessName', e.target.value)}
-                          className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor={`${id}-slug`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Custom Domain URL</Label>
-                      <div className="relative">
-                        <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                        <Input
-                          id={`${id}-slug`}
-                          placeholder="arjuna-rent"
-                          value={formData.slug}
-                          onChange={e => updateForm('slug', e.target.value.toLowerCase().replace(/\s+/g, '-'))}
-                          className="h-12 pl-12 rounded-xl border-slate-200 font-mono text-sm focus-visible:ring-primary/20"
-                          required
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-                          .rent.webzoka.com
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-slate-400 italic">Ini akan menjadi alamat website operasional Anda nantinya.</p>
-                    </div>
-
-                    <Button type="submit" className="w-full h-12 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold gap-2">
-                      Lanjutkan <ArrowRight size={18} />
-                    </Button>
-                  </form>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                >
-                  <div className="mb-8">
-                    <button
-                      onClick={() => setStep(1)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-primary transition-colors mb-4"
-                    >
-                      <ChevronLeft size={14} /> Kembali
-                    </button>
-                    <h2 className="text-xl font-bold text-slate-900 mb-1">Akses Pengelola</h2>
-                    <p className="text-sm text-slate-500">Kredensial untuk masuk ke Owner Dashboard.</p>
-                  </div>
-
-                  <form onSubmit={handleRegister} className="space-y-5">
-                    <div className="space-y-2">
-                      <Label htmlFor={`${id}-email`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Utama</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                        <Input
-                          id={`${id}-email`}
-                          type="email"
-                          placeholder="owner@bisnisanda.com"
-                          value={formData.email}
-                          onChange={e => updateForm('email', e.target.value)}
-                          className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor={`${id}-whatsapp`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Nomor WhatsApp</Label>
-                      <div className="relative">
-                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                        <Input
-                          id={`${id}-whatsapp`}
-                          placeholder="62812xxxxxx"
-                          value={formData.whatsapp}
-                          onChange={e => updateForm('whatsapp', e.target.value)}
-                          className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor={`${id}-password`} className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                        <Input
-                          id={`${id}-password`}
-                          type="password"
-                          placeholder="••••••••"
-                          value={formData.password}
-                          onChange={e => updateForm('password', e.target.value)}
-                          className="h-12 pl-12 rounded-xl border-slate-200 focus-visible:ring-primary/20"
-                          required
-                          minLength={8}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <Button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full h-14 rounded-xl bg-slate-900 hover:bg-black text-white font-bold gap-2 shadow-lg transition-all active:scale-95"
-                      >
-                        {loading ? (
-                          <Loader2 className="animate-spin" size={20} />
-                        ) : (
-                          <>
-                            {submitLabel} <Sparkles size={18} className="text-sky-300" />
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {loading ? (
+                    <Loader2 className="animate-spin" size={20} />
+                  ) : (
+                    <>
+                      {submitLabel} <Sparkles size={18} className="text-sky-300" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -285,7 +287,7 @@ export default function RegisterPage() {
              <span className="text-xs font-bold text-slate-500">{isSubscribe ? '14 hari pertama gratis, batalkan kapan saja' : 'Free 14-Day Trial'}</span>
            </div>
            <div className="flex items-center gap-2 text-xs text-slate-400">
-             Sudah punya akun? <Link href="/auth/login" className="text-primary font-bold hover:underline">Login Portal</Link>
+             Sudah punya akun? <Link href="/auth/login" className="text-primary font-bold hover:underline">Masuk di sini</Link>
            </div>
         </div>
       </div>

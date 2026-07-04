@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   const rl = rateLimit(`register:${clientIp(request)}`, 5, 10 * 60_000)
   if (!rl.allowed) return tooManyRequests(rl.retryAfter)
 
-  let body: { businessName?: string; slug?: string; email?: string; whatsapp?: string; password?: string }
+  let body: { businessName?: string; slug?: string; adminName?: string; email?: string; whatsapp?: string; password?: string }
   try {
     body = await request.json()
   } catch {
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
   }
 
   const name = (body.businessName ?? '').trim()
+  const adminName = (body.adminName ?? '').trim()
   const email = (body.email ?? '').trim().toLowerCase()
   const phone = (body.whatsapp ?? '').trim() || null
   const password = body.password ?? ''
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
     email,
     password,
     email_confirm: true,
-    user_metadata: { full_name: `${name} Admin`, role: 'owner', tenant_id: tenantId },
+    user_metadata: { full_name: adminName || `${name} Admin`, role: 'owner', tenant_id: tenantId },
   })
   if (uErr || !created?.user) {
     await auth.from('tenants').delete().eq('id', tenantId)
