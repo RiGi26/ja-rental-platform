@@ -175,7 +175,7 @@ function RegisterForm() {
         <div className="mb-7 text-center">
           <img src="/logo-rocket.png" alt="Logo Webzoka" className="mx-auto h-14 w-14 object-contain" />
           <h1 className="mt-3 text-xl font-bold tracking-tight text-slate-900">
-            {isSubscribe ? `Berlangganan ${planName}` : 'Daftarkan Bisnis Anda'}
+            {isSubscribe ? `Berlangganan ${planName}` : 'Daftar & Mulai Trial'}
           </h1>
           <p className="mt-1 text-sm text-slate-500">
             {isSubscribe ? 'Isi data bisnis, lalu lanjut ke pembayaran' : 'Trial 14 hari · Tanpa kartu kredit'}
