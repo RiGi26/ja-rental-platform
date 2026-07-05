@@ -152,6 +152,19 @@ export async function getAllVehicles() {
   return data ?? []
 }
 
+export async function getVehicleById(id: string) {
+  const tenantId = await getActiveTenantId()
+  if (!tenantId || !id) return null
+  const supabase = createRentalServiceClient()
+  const { data } = await supabase
+    .from('vehicles')
+    .select('*')
+    .eq('id', id)
+    .eq('tenant_id', tenantId)
+    .maybeSingle()
+  return data
+}
+
 export async function getAllDrivers() {
   const tenantId = await getActiveTenantId()
   if (!tenantId) return []
