@@ -17,10 +17,13 @@ export function LoginForm() {
       return { error: 'Email atau password salah. Silakan coba lagi.' }
     }
 
-    // Smart redirect berdasarkan role di JWT claim.
+    // Smart redirect berdasarkan role. Utamakan klaim JWT `user_role` (dari auth-hook
+    // jexp), fallback ke `user_metadata.role` yang SELALU ada di token (ditulis saat
+    // register, app/api/register/route.ts) — supaya owner tetap diarahkan ke /admin
+    // walau hook custom_access_token belum aktif. Pelanggan (tanpa role) → /account.
     const { data: { session } } = await supabase.auth.getSession()
     const claims = session?.access_token ? JSON.parse(atob(session.access_token.split('.')[1])) : {}
-    const role: string | undefined = claims.user_role
+    const role: string | undefined = claims.user_role ?? claims.user_metadata?.role
 
     if (next !== '/') {
       router.push(next)
