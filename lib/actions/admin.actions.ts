@@ -1,17 +1,13 @@
 'use server'
 
-import { createCoreClient } from '@/lib/supabase/server'
 import { createRentalServiceClient } from '@/lib/supabase/service'
+import { getActiveTenantId } from '@/lib/tenant-entitlements'
 
-async function getActiveTenantId(): Promise<string | null> {
-  const supabase = await createCoreClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.access_token) return null
-  try {
-    const payload = JSON.parse(atob(session.access_token.split('.')[1]))
-    return payload.tenant_id ?? payload.linked_tenant_id ?? null
-  } catch { return null }
-}
+// Tenant resolution is centralized in getActiveTenantId (tenant-entitlements):
+// JWT `tenant_id` claim first, then a Core `tenant_members` DB fallback. The
+// fallback is essential because the custom-access-token hook is currently OFF,
+// so the JWT carries no `tenant_id` — a JWT-only resolver returns null and every
+// admin read here (dashboard, fleet, bookings…) shows empty for real owners.
 
 // ── Read helpers (called from Server Components) ────────────────────────────
 
