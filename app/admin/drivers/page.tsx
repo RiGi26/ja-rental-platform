@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Star } from 'lucide-react'
 import { getAllDrivers } from '@/lib/actions/admin.actions'
 
 export const metadata: Metadata = { title: 'Manajemen Driver' }
@@ -66,7 +67,10 @@ export default async function AdminDriversPage() {
                     </td>
                     <td className="px-6 py-4 font-mono text-slate-600">{d.license_no}</td>
                     <td className="px-6 py-4">
-                      <span className="font-bold text-slate-800">⭐ {d.avg_rating?.toFixed(1) ?? '-'}</span>
+                      <span className="font-bold text-slate-800 flex items-center gap-1">
+                        <Star size={14} className="fill-current text-amber-400" />
+                        {d.avg_rating?.toFixed(1) ?? '-'}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <span
@@ -126,7 +130,10 @@ export default async function AdminDriversPage() {
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-slate-500">Rating</span>
-                    <span className="font-bold text-slate-800">⭐ {d.avg_rating?.toFixed(1) ?? '-'}</span>
+                    <span className="font-bold text-slate-800 flex items-center gap-1">
+                      <Star size={14} className="fill-current text-amber-400" />
+                      {d.avg_rating?.toFixed(1) ?? '-'}
+                    </span>
                   </div>
                 </div>
 

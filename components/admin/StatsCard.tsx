@@ -1,8 +1,10 @@
+import type { LucideIcon } from 'lucide-react'
+
 interface Props {
   label:   string
   value:   string
   subtext: string
-  icon:    string
+  icon:    LucideIcon
   color:   'blue' | 'green' | 'purple' | 'orange'
 }
 
@@ -13,7 +15,7 @@ const colorMap = {
   orange: { bg: '#fff7ed', text: '#ea580c' },
 }
 
-export default function StatsCard({ label, value, subtext, icon, color }: Props) {
+export default function StatsCard({ label, value, subtext, icon: Icon, color }: Props) {
   const { bg, text } = colorMap[color]
 
   return (
@@ -23,10 +25,10 @@ export default function StatsCard({ label, value, subtext, icon, color }: Props)
     >
       <div className="flex items-start justify-between">
         <div
-          className="w-[52px] h-[52px] flex items-center justify-center text-2xl flex-shrink-0 transition-transform hover:scale-105"
+          className="w-[52px] h-[52px] flex items-center justify-center flex-shrink-0 transition-transform hover:scale-105"
           style={{ background: bg, borderRadius: 12, color: text }}
         >
-          {icon}
+          <Icon size={24} />
         </div>
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">
           Hari ini
