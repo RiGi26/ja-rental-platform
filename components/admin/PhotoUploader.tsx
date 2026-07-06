@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { ImagePlus, X, Star, Loader2 } from 'lucide-react'
+import { compressImageToWebp } from '@/lib/image-compress'
 
 // Reusable fleet-photo uploader. Each file is POSTed to the admin upload route,
 // which stores it in the public `vehicle-photos` bucket and returns a public URL.
@@ -45,8 +46,16 @@ export default function PhotoUploader({
     const uploaded: string[] = []
     for (const file of picked) {
       try {
+        // Kecilkan + konversi WebP di browser sebelum unggah (hemat storage/bandwidth);
+        // fallback ke file asli bila kompres gagal supaya upload tak pernah putus.
+        let toSend: File = file
+        try {
+          toSend = await compressImageToWebp(file)
+        } catch {
+          /* pakai file asli */
+        }
         const fd = new FormData()
-        fd.append('file', file)
+        fd.append('file', toSend)
         const res = await fetch(UPLOAD_URL, { method: 'POST', body: fd })
         const data = await res.json().catch(() => ({}))
         if (!res.ok) setError(ERR[data?.error as string] ?? 'Gagal mengunggah.')
