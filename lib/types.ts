@@ -16,7 +16,11 @@ export type UserRole = 'owner' | 'admin' | 'driver' | 'customer' | 'superadmin'
 
 // ── Vehicle ───────────────────────────────────────────────────────────────────
 export type VehicleStatus = 'available' | 'on_trip' | 'maintenance' | 'inactive'
-export type VehicleType = 'minibus' | 'sedan' | 'suv' | 'van' | 'bus'
+export type VehicleType =
+  | 'minibus' | 'sedan' | 'suv' | 'van' | 'bus'
+  | 'mpv' | 'hatchback' | 'citycar' | 'pickup'
+export type Transmission = 'Manual' | 'Matic'
+export type FuelType = 'Bensin' | 'Diesel' | 'Hybrid' | 'Listrik'
 
 export interface Vehicle {
   id: string
@@ -27,6 +31,10 @@ export interface Vehicle {
   model: string
   capacity: number
   year?: number
+  price_per_day: number
+  transmission?: string | null
+  fuel_type?: string | null
+  description?: string | null
   status: VehicleStatus
   photos: string[]
   next_service_km?: number

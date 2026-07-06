@@ -93,11 +93,15 @@ export async function getScheduleById(scheduleId: string): Promise<Schedule | nu
 const RENTAL_VEHICLE_TYPES: VehicleType[] = ['sedan', 'suv', 'van', 'minibus', 'bus']
 
 const PRICE_BY_TYPE: Record<VehicleType, number> = {
-  sedan:   400_000,
-  suv:     600_000,
-  van:     450_000,
-  minibus: 500_000,
-  bus:     800_000,
+  sedan:     400_000,
+  suv:       600_000,
+  van:       450_000,
+  minibus:   500_000,
+  bus:       800_000,
+  mpv:       350_000,
+  hatchback: 300_000,
+  citycar:   250_000,
+  pickup:    400_000,
 }
 
 export async function searchRentalVehicles(params: RentalSearchParams): Promise<VehicleWithPrice[]> {

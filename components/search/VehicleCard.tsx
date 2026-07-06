@@ -12,11 +12,15 @@ interface Props {
 }
 
 const TYPE_LABEL: Record<VehicleType, string> = {
-  sedan:   'Sedan',
-  suv:     'SUV',
-  van:     'Van',
-  minibus: 'Minibus',
-  bus:     'Bus',
+  sedan:     'Sedan',
+  suv:       'SUV',
+  van:       'Van',
+  minibus:   'Minibus',
+  bus:       'Bus',
+  mpv:       'MPV',
+  hatchback: 'Hatchback',
+  citycar:   'City Car',
+  pickup:    'Pick Up',
 }
 
 export default function VehicleCard({ vehicle, start, end, withDriver }: Props) {
