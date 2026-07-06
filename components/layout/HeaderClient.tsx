@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Globe, LogIn, User, ChevronDown, LogOut, ClipboardList, Settings } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createCoreClient } from '@/lib/supabase/client'
@@ -19,6 +19,7 @@ interface Props {
 
 export default function HeaderClient({ initialUser }: Props) {
   const router = useRouter()
+  const pathname = usePathname()
   const [currency,      setCurrency]      = useState('JPY')
   const [lang,          setLang]          = useState('ID')
   const [dropdownOpen,  setDropdownOpen]  = useState(false)
@@ -45,6 +46,12 @@ export default function HeaderClient({ initialUser }: Props) {
 
   const displayName = initialUser?.full_name?.split(' ')[0] ?? initialUser?.email?.split('@')[0] ?? ''
   const initials    = displayName.slice(0, 2).toUpperCase()
+
+  // Auth surfaces (business self-subscribe /register + customer /auth/*) render
+  // self-contained full-screen cards (PortalRegisterCard / PortalLoginCard) that
+  // carry their own navigation — like the other 5 portals, they show no marketing
+  // nav on top. Hide the header there so rental's auth pages match.
+  if (pathname === '/register' || pathname.startsWith('/auth/')) return null
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
