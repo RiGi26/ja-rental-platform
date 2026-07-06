@@ -3,27 +3,31 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useLayoutStore } from '@/store/useLayoutStore'
-import { X } from 'lucide-react'
+import {
+  X, LayoutDashboard, Bus, MapPin, Route, Users, CalendarDays,
+  ClipboardList, Car, CreditCard, TrendingUp, Wrench, Receipt, Settings,
+  type LucideIcon,
+} from 'lucide-react'
 import { createCoreClient } from '@/lib/supabase/client'
 import type { EntitlementKey } from '@/lib/entitlements'
 
 /** `tour` (optional) = data-tour anchor key for the onboarding product tour. */
-type MenuItem = { icon: string; label: string; href: string; ent?: EntitlementKey; tour?: string }
+type MenuItem = { icon: LucideIcon; label: string; href: string; ent?: EntitlementKey; tour?: string }
 
 const menuItems: MenuItem[] = [
-  { icon: '📊', label: 'Dashboard',        href: '/admin' },
-  { icon: '🚐', label: 'Armada',           href: '/admin/fleet', tour: 'nav-fleet' },
-  { icon: '📍', label: 'Live Tracking',    href: '/admin/tracking', ent: 'gps_tracking' },
-  { icon: '🛣️', label: 'Rute Tetap',      href: '/admin/routes' },
-  { icon: '👨‍✈️', label: 'Driver & Karyawan', href: '/admin/drivers' },
-  { icon: '📅', label: 'Jadwal',           href: '/admin/schedules', tour: 'nav-schedules' },
-  { icon: '📋', label: 'Booking',          href: '/admin/bookings', tour: 'nav-bookings' },
-  { icon: '🚗', label: 'Rental Self-Drive', href: '/admin/rental', ent: 'selfdrive', tour: 'nav-rental' },
-  { icon: '💳', label: 'Pembayaran',       href: '/admin/bookings?tab=payment', ent: 'online_payment' },
-  { icon: '📈', label: 'Laporan',          href: '/admin/reports', ent: 'reports' },
-  { icon: '🔧', label: 'Reminder Servis',  href: '/admin/fleet?tab=reminder' },
-  { icon: '🧾', label: 'Langganan',         href: '/admin/langganan', tour: 'nav-billing' },
-  { icon: '⚙️', label: 'Pengaturan',      href: '/admin/settings' },
+  { icon: LayoutDashboard, label: 'Dashboard',        href: '/admin' },
+  { icon: Bus,             label: 'Armada',           href: '/admin/fleet', tour: 'nav-fleet' },
+  { icon: MapPin,          label: 'Live Tracking',    href: '/admin/tracking', ent: 'gps_tracking' },
+  { icon: Route,           label: 'Rute Tetap',       href: '/admin/routes' },
+  { icon: Users,           label: 'Driver & Karyawan', href: '/admin/drivers' },
+  { icon: CalendarDays,    label: 'Jadwal',           href: '/admin/schedules', tour: 'nav-schedules' },
+  { icon: ClipboardList,   label: 'Booking',          href: '/admin/bookings', tour: 'nav-bookings' },
+  { icon: Car,             label: 'Rental Self-Drive', href: '/admin/rental', ent: 'selfdrive', tour: 'nav-rental' },
+  { icon: CreditCard,      label: 'Pembayaran',       href: '/admin/bookings?tab=payment', ent: 'online_payment' },
+  { icon: TrendingUp,      label: 'Laporan',          href: '/admin/reports', ent: 'reports' },
+  { icon: Wrench,          label: 'Reminder Servis',  href: '/admin/fleet?tab=reminder' },
+  { icon: Receipt,         label: 'Langganan',        href: '/admin/langganan', tour: 'nav-billing' },
+  { icon: Settings,        label: 'Pengaturan',       href: '/admin/settings' },
 ]
 
 /** entitlements undefined = show all (legacy / not synced). */
@@ -95,9 +99,7 @@ export default function AdminSidebar({ entitlements }: { entitlements?: Entitlem
                   ? { background: 'linear-gradient(135deg, #1A56DB, #3b82f6)', boxShadow: '0 4px 14px rgba(26,86,219,0.3)' }
                   : {}}
               >
-                <span className={`text-base leading-none ${active ? '' : 'grayscale group-hover:grayscale-0'}`}>
-                  {item.icon}
-                </span>
+                <item.icon size={18} className={active ? '' : 'text-slate-400 group-hover:text-blue-600'} />
                 {item.label}
               </Link>
             )

@@ -1,3 +1,5 @@
+import { Star } from 'lucide-react'
+
 interface Driver {
   id:         string
   name:       string
@@ -38,7 +40,9 @@ export default function DriverPerformanceList({ drivers }: Props) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-slate-800 truncate">{d.name}</p>
-              <p className="text-xs text-slate-400">Rating: ⭐ {d.avg_rating?.toFixed(1) ?? '-'}</p>
+              <p className="text-xs text-slate-400 flex items-center gap-1">
+                Rating: <Star size={12} className="fill-current text-amber-400" /> {d.avg_rating?.toFixed(1) ?? '-'}
+              </p>
             </div>
             <span
               className="text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"

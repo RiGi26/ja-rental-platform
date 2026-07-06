@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DollarSign, Bus, CalendarDays, AlertTriangle } from 'lucide-react'
 import {
   getAdminDashboardStats,
   getActiveSchedules,
@@ -63,28 +64,28 @@ export default async function AdminDashboardPage({
           label="Pendapatan Hari Ini"
           value={formatRupiah(stats.revenueToday)}
           subtext="dari transaksi terkonfirmasi"
-          icon="💰"
+          icon={DollarSign}
           color="blue"
         />
         <StatsCard
           label="Armada Aktif"
           value={`${stats.vehicles.active}/${stats.vehicles.total}`}
           subtext="kendaraan beroperasi"
-          icon="🚐"
+          icon={Bus}
           color="green"
         />
         <StatsCard
           label="Booking Hari Ini"
           value={String(stats.bookingsToday)}
           subtext="booking terkonfirmasi"
-          icon="📅"
+          icon={CalendarDays}
           color="purple"
         />
         <StatsCard
           label="Alert Kendaraan"
           value={String(stats.vehicleAlerts.length)}
           subtext="perlu perhatian dalam 30 hari"
-          icon="⚠️"
+          icon={AlertTriangle}
           color="orange"
         />
       </div>

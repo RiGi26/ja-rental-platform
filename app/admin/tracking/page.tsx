@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Map } from 'lucide-react'
 import { getActiveSchedules } from '@/lib/actions/admin.actions'
 import { assertEntitled } from '@/lib/tenant-entitlements'
 import TrackingTable from '@/components/admin/TrackingTable'
@@ -32,7 +33,7 @@ export default async function AdminTrackingPage() {
         }}
       >
         <div className="text-center">
-          <div className="text-5xl mb-3">🗺️</div>
+          <Map size={48} strokeWidth={1.5} className="mx-auto mb-3 text-blue-400" />
           <p className="font-bold text-slate-700">Peta GPS Realtime</p>
           <p className="text-sm text-slate-400 mt-1">
             Integrasi Google Maps API — jadwalkan di Sprint 5
