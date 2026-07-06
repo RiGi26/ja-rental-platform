@@ -27,6 +27,11 @@ const STATUS_OPTIONS = [
 const TRANSMISSION_OPTIONS = ['Manual', 'Matic']
 const FUEL_OPTIONS = ['Bensin', 'Diesel', 'Hybrid', 'Listrik']
 
+// Render a stored number (including 0) in a text input; blank only when null/undefined.
+// Without this, a vehicle whose price/capacity is 0 shows an empty field (0 is falsy),
+// which then fails the required-field check and blocks saving.
+const numStr = (n?: number | null) => (n != null ? String(n) : '')
+
 export default function VehicleForm({ mode, initial }: { mode: 'create' | 'edit'; initial?: Vehicle }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -37,17 +42,17 @@ export default function VehicleForm({ mode, initial }: { mode: 'create' | 'edit'
   const [model, setModel] = useState<string>(initial?.model ?? '')
   const [plate, setPlate] = useState<string>(initial?.plate ?? '')
   const [type, setType] = useState<string>(initial?.type ?? 'mpv')
-  const [capacity, setCapacity] = useState<string>(initial?.capacity ? String(initial.capacity) : '')
-  const [year, setYear] = useState<string>(initial?.year ? String(initial.year) : '')
+  const [capacity, setCapacity] = useState<string>(numStr(initial?.capacity))
+  const [year, setYear] = useState<string>(numStr(initial?.year))
   const [transmission, setTransmission] = useState<string>(initial?.transmission ?? '')
   const [fuelType, setFuelType] = useState<string>(initial?.fuel_type ?? '')
-  const [price, setPrice] = useState<string>(initial?.price_per_day ? String(initial.price_per_day) : '')
+  const [price, setPrice] = useState<string>(numStr(initial?.price_per_day))
   const [status, setStatus] = useState<string>(initial?.status ?? 'available')
   const [description, setDescription] = useState<string>(initial?.description ?? '')
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? [])
 
   const [nextServiceDate, setNextServiceDate] = useState<string>(initial?.next_service_date ?? '')
-  const [nextServiceKm, setNextServiceKm] = useState<string>(initial?.next_service_km ? String(initial.next_service_km) : '')
+  const [nextServiceKm, setNextServiceKm] = useState<string>(numStr(initial?.next_service_km))
   const [stnkExpiry, setStnkExpiry] = useState<string>(initial?.stnk_expiry ?? '')
   const [kirExpiry, setKirExpiry] = useState<string>(initial?.kir_expiry ?? '')
   const [taxExpiry, setTaxExpiry] = useState<string>(initial?.tax_expiry ?? '')
