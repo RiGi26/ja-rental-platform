@@ -18,15 +18,27 @@ export function DialogContent({
   className,
   children,
   showClose = true,
+  sheet = false,
   ...props
-}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { showClose?: boolean }) {
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+  showClose?: boolean
+  /** Mobile bottom-sheet, centered on sm+. Default false = always-centered panel (unchanged). */
+  sheet?: boolean
+}) {
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm" />
       <DialogPrimitive.Content
         className={cn(
-          'fixed left-1/2 top-1/2 z-[100] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2',
-          'rounded-[24px] border border-slate-100 bg-white p-6 focus:outline-none',
+          'fixed z-[100] max-h-[85vh] overflow-y-auto',
+          sheet
+            ? [
+                'inset-x-0 bottom-0 w-full rounded-t-[24px] rounded-b-none border-t border-slate-100 pb-[max(1.5rem,env(safe-area-inset-bottom))]',
+                'sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-2rem)] sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[24px] sm:border sm:pb-6',
+                'animate-sheet',
+              ]
+            : 'left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[24px] border border-slate-100',
+          'bg-white p-6 focus:outline-none',
           className
         )}
         style={{ boxShadow: '0 12px 40px rgba(15,23,42,0.16)' }}

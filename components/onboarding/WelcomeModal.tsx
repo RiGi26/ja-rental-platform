@@ -6,6 +6,9 @@ import { Sparkles, Bus, CalendarDays, ClipboardList, ArrowRight } from 'lucide-r
 // ============================================================
 // WelcomeModal — one-time first-run greeting (Orient phase).
 // Presentational only: parent (OnboardingLauncher) owns open state + persistence.
+// Click-outside is disabled (onPointerDownOutside/onInteractOutside) so a stray
+// overlay misclick can't dismiss first-run — closing is only via a deliberate
+// choice: the Skip/Start buttons or Escape.
 // ============================================================
 
 interface WelcomeModalProps {
@@ -25,7 +28,12 @@ const POINTS: { icon: React.ElementType; text: string }[] = [
 export function WelcomeModal({ open, onOpenChange, userName, onStartTour, onSkip }: WelcomeModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showClose={false}>
+      <DialogContent
+        showClose={false}
+        sheet
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         {/* Icon badge */}
         <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#1A56DB]/10">
           <Sparkles className="h-6 w-6 text-[#1A56DB]" strokeWidth={2} />
