@@ -1,25 +1,33 @@
 import { ChevronDown } from 'lucide-react'
 
+const WA_HREF = 'https://wa.me/6281296917963?text=' + encodeURIComponent('Halo Webzoka, saya ingin tanya soal Portal Rental & Travel.')
+
+// FAQ untuk calon pengguna portal (pemilik usaha). Jawaban hanya menyebut yang
+// benar-benar berlaku — kalau belum ada, jangan dijanjikan di sini.
 const faqs = [
   {
-    q: 'Bagaimana cara membayarnya?',
-    a: 'Pembayaran dilakukan online lewat gateway tepercaya dengan beragam metode lokal — transfer bank, e-wallet, hingga kartu. Pesanan otomatis terkonfirmasi begitu pembayaran berhasil.',
+    q: 'Bisa coba dulu tanpa daftar?',
+    a: 'Bisa. Buka Demo Portal — kamu masuk sebagai admin dengan data contoh, bebas klik-klik semua menunya. Tidak perlu email, tidak perlu kartu kredit.',
   },
   {
-    q: 'Apakah saya langsung dapat tiket?',
-    a: 'Ya. E-ticket terbit otomatis ke email dan tersimpan di akun Anda segera setelah pembayaran selesai. Tidak perlu menunggu konfirmasi manual.',
+    q: 'Berapa lama sampai portal saya siap dipakai?',
+    a: 'Begitu daftar, portal langsung aktif dengan trial 14 hari. Waktu terlama justru mengisi data armada dan tarif — dan itu bisa dicicil.',
   },
   {
-    q: 'Bisakah memilih kursi sendiri untuk travel?',
-    a: 'Bisa. Denah kursi ditampilkan realtime saat memesan, jadi Anda bisa memilih posisi favorit selama masih tersedia.',
+    q: 'Pelanggan saya memesan lewat mana?',
+    a: 'Lewat halaman pemesanan online milik usahamu: pelanggan memilih jadwal atau unit, lalu membayar. Pesanan langsung tercatat di dashboard beserta kode booking-nya.',
   },
   {
-    q: 'Untuk rental, apa bisa tanpa sopir?',
-    a: 'Bisa. Tersedia opsi lepas kunci (tanpa sopir) maupun dengan driver profesional. Lengkapi dokumen verifikasi secara online sebelum pengambilan unit.',
+    q: 'Pembayaran diproses lewat apa?',
+    a: 'Lewat Midtrans — transfer bank, e-wallet, dan kartu. Status pembayaran masuk otomatis ke pesanan, jadi tidak perlu cek mutasi satu per satu.',
   },
   {
-    q: 'Bagaimana kalau perlu ubah atau batalkan pesanan?',
-    a: 'Ketentuan perubahan dan pembatalan mengikuti kebijakan masing-masing armada/rute, dan ditampilkan jelas sebelum Anda membayar. Kelola pesanan langsung dari akun Anda.',
+    q: 'Saya cuma rental harian, tidak punya rute travel. Tetap cocok?',
+    a: 'Cocok. Bagian rute dan jadwal boleh dibiarkan kosong — pakai saja modul armada, tarif harian, dan booking. Sebaliknya juga berlaku untuk travel yang tidak menyewakan unit harian.',
+  },
+  {
+    q: 'Berapa harga langganannya?',
+    a: 'Ada beberapa paket, dan trial 14 hari berlaku tanpa kartu kredit. Rincian harga per paket ada di halaman harga Webzoka — atau tanya langsung ke tim kami.',
   },
 ]
 
@@ -30,7 +38,7 @@ export default function FaqSection() {
         <div className="mb-10 text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Tanya jawab</p>
           <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-            Hal yang sering ditanyakan
+            Hal yang sering ditanyakan pemilik usaha
           </h2>
         </div>
 
@@ -52,6 +60,18 @@ export default function FaqSection() {
             </details>
           ))}
         </div>
+
+        <p className="mt-8 text-center text-sm text-slate-500">
+          Pertanyaan lain?{' '}
+          <a
+            href={WA_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-[#1A56DB] hover:underline"
+          >
+            Chat tim kami
+          </a>
+        </p>
       </div>
     </section>
   )

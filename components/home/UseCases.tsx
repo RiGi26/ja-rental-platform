@@ -1,25 +1,26 @@
-import { Home, Briefcase, Users, KeyRound } from 'lucide-react'
+import { Car, Bus, Plane, Users } from 'lucide-react'
 
+// "Cocok untuk" versi pemilik usaha — bukan alasan orang bepergian.
 const cases = [
   {
-    icon: Home,
-    title: 'Pulang kampung',
-    desc: 'Jadwal travel antar kota yang jelas, kursi aman jauh hari sebelum musim ramai.',
+    icon: Car,
+    title: 'Rental mobil harian',
+    desc: 'Unit lepas kunci maupun dengan sopir. Tarif per hari, status unit, dan dokumen kendaraan terpantau.',
   },
   {
-    icon: Briefcase,
-    title: 'Perjalanan dinas',
-    desc: 'Berangkat tepat waktu dengan e-ticket rapi untuk reimburse, atau sewa mobil dengan sopir.',
+    icon: Bus,
+    title: 'Travel & shuttle antar kota',
+    desc: 'Rute tetap dengan jadwal berangkat. Kursi terisi otomatis dari pemesanan online.',
+  },
+  {
+    icon: Plane,
+    title: 'Antar-jemput bandara',
+    desc: 'Jadwal penjemputan dengan titik jemput jelas, kode booking dipegang penumpang.',
   },
   {
     icon: Users,
-    title: 'Liburan keluarga',
-    desc: 'Sewa mobil lengkap dengan driver, tinggal duduk dan nikmati perjalanan bersama.',
-  },
-  {
-    icon: KeyRound,
-    title: 'Sewa harian lepas kunci',
-    desc: 'Butuh mobil sendiri sehari-dua hari? Verifikasi online, ambil kunci, langsung jalan.',
+    title: 'Sewa dengan sopir untuk acara',
+    desc: 'Rombongan, kantor, atau acara keluarga — unit dan supir ditugaskan dari dashboard.',
   },
 ]
 
@@ -30,10 +31,10 @@ export default function UseCases() {
         <div className="mx-auto mb-12 max-w-2xl text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Cocok untuk</p>
           <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-            Apa pun rencana jalannya
+            Usaha yang armadanya mulai susah dicatat manual
           </h2>
           <p className="mt-4 text-base leading-relaxed text-slate-500">
-            Dari rutinitas harian sampai perjalanan jauh — pilih yang paling pas.
+            Mulai dari beberapa unit sampai puluhan — portalnya tetap satu.
           </p>
         </div>
 

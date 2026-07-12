@@ -21,10 +21,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: 'JaMobility — Travel & Rental Mobil',
-    template: '%s | JaMobility',
+    default: 'Webzoka Rental & Travel — Portal Armada, Jadwal & Booking',
+    template: '%s | Webzoka Rental & Travel',
   },
-  description: 'Platform booking travel antar kota & rental mobil premium Webzoka Travel.',
+  description:
+    'Portal operasional untuk usaha rental mobil dan travel antar kota: armada, rute, jadwal, booking pelanggan, dan pembayaran dalam satu dashboard.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

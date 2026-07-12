@@ -1,11 +1,13 @@
-import { Sparkles, Ticket, Armchair, Navigation, ShieldCheck } from 'lucide-react'
-import SearchBox from '@/components/search/SearchBox'
+import Link from 'next/link'
+import { Sparkles, ArrowRight, PlayCircle, CreditCard, CalendarClock, ShieldCheck } from 'lucide-react'
 
+// Landing root (rent.webzoka.com) = ETALASE PORTAL untuk pemilik usaha rental/travel,
+// bukan storefront tiket. Alur booking pelanggan tetap hidup di /search & /booking untuk
+// tenant yang punya jadwal/armada sendiri.
 const trustChips = [
-  { icon: Ticket, label: 'E-ticket otomatis' },
-  { icon: Armchair, label: 'Pilih kursi realtime' },
-  { icon: Navigation, label: 'Tracking driver' },
-  { icon: ShieldCheck, label: 'Pembayaran aman' },
+  { icon: CalendarClock, label: 'Trial 14 hari' },
+  { icon: CreditCard, label: 'Tanpa kartu kredit' },
+  { icon: ShieldCheck, label: 'Pembayaran via Midtrans' },
 ]
 
 export default function HeroSection() {
@@ -34,7 +36,6 @@ export default function HeroSection() {
           </pattern>
         </defs>
         <rect width="1440" height="900" fill="url(#hero-grid)" />
-        {/* dotted travel route */}
         <path
           d="M120 720 C 360 560, 480 640, 720 470 S 1100 300, 1340 200"
           stroke="#7DD3FC"
@@ -60,38 +61,47 @@ export default function HeroSection() {
       />
 
       {/* Content */}
-      <div className="animate-fade-up relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-4 pb-28 pt-28 md:pt-24">
-        {/* Eyebrow */}
+      <div className="animate-fade-up relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-4 pb-24 pt-28 md:pt-24">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white/90 backdrop-blur-sm">
           <Sparkles size={15} className="text-sky-300" aria-hidden />
-          Travel antar kota &amp; rental mobil — Webzoka
+          Portal Rental &amp; Travel — Webzoka
         </div>
 
-        {/* Headline */}
         <h1
           className="text-balance text-center font-display font-extrabold leading-[1.08] tracking-tight text-white"
-          style={{ fontSize: 'clamp(2.25rem, 5.4vw, 4rem)' }}
+          style={{ fontSize: 'clamp(2.1rem, 5.4vw, 4rem)' }}
         >
-          Satu pencarian, perjalanan beres.
+          Berhenti catat booking di
           <br />
           <span className="bg-gradient-to-r from-sky-300 to-blue-200 bg-clip-text text-transparent">
-            Pesan kursi &amp; sewa mobil
-          </span>{' '}
-          tanpa drama.
+            buku tulis dan chat WA
+          </span>
         </h1>
 
         <p className="mx-auto mt-5 max-w-xl text-center text-base leading-relaxed text-white/75 md:text-lg">
-          Cari jadwal travel atau mobil, amankan kursi favorit, bayar aman, lalu terima
-          e-ticket otomatis dengan tracking langsung. Selesai dalam hitungan menit.
+          Portal untuk pemilik rental mobil dan travel antar kota: armada, rute, jadwal,
+          booking pelanggan, dan pembayaran — semuanya di satu dashboard.
         </p>
 
-        {/* SearchBox */}
-        <div className="mt-10 w-full">
-          <SearchBox />
+        {/* CTA utama — coba dulu, baru daftar */}
+        <div className="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <Link
+            href="/demo"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 font-bold text-[#1A56DB] transition-colors hover:bg-slate-50 active:scale-[0.97]"
+          >
+            <PlayCircle size={18} aria-hidden />
+            Coba Demo Portal
+          </Link>
+          <Link
+            href="/register"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/[0.06] px-8 py-4 font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/15 active:scale-[0.97]"
+          >
+            Mulai Trial 14 Hari
+            <ArrowRight size={18} aria-hidden />
+          </Link>
         </div>
 
-        {/* Trust chips (honest, icon-based) */}
-        <ul className="mt-9 flex flex-wrap items-center justify-center gap-x-3 gap-y-2.5">
+        <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2.5">
           {trustChips.map(({ icon: Icon, label }) => (
             <li
               key={label}

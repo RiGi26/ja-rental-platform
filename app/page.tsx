@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createCoreClient } from '@/lib/supabase/server'
 import HeroSection from '@/components/home/HeroSection'
-import StatsSection from '@/components/home/StatsSection'
 import ServicesSection from '@/components/home/ServicesSection'
 import HowItWorks from '@/components/home/HowItWorks'
 import WhyChooseUs from '@/components/home/WhyChooseUs'
@@ -11,12 +10,17 @@ import FaqSection from '@/components/home/FaqSection'
 import CtaSection from '@/components/home/CtaSection'
 import SiteFooter from '@/components/home/SiteFooter'
 
+// Landing root = etalase Portal Rental & Travel untuk PEMILIK USAHA. Alur booking
+// pelanggan (/search, /booking, /tracking) tetap berjalan untuk tenant yang punya
+// armada & jadwal sendiri — halaman ini bukan storefront tiket.
 export const metadata: Metadata = {
-  title: 'JaMobility — Travel Antar Kota & Rental Mobil Terpercaya',
-  description: 'Pesan tiket travel antar kota dan rental mobil premium secara online. Kursi realtime, e-ticket otomatis, tracking langsung.',
+  title: 'Portal Rental & Travel — Webzoka | Kelola armada, jadwal & booking',
+  description:
+    'Portal operasional untuk usaha rental mobil dan travel antar kota: armada, rute, jadwal, booking pelanggan, dan pembayaran dalam satu dashboard. Coba demo, trial 14 hari tanpa kartu kredit.',
   openGraph: {
-    title: 'JaMobility — Travel & Rental Mobil',
-    description: 'Platform booking travel antar kota & rental mobil Webzoka Travel.',
+    title: 'Portal Rental & Travel — Webzoka',
+    description:
+      'Armada, rute, jadwal, booking, dan pembayaran dalam satu dashboard. Demo terbuka tanpa daftar.',
     type: 'website',
   },
 }
@@ -37,10 +41,9 @@ export default async function HomePage() {
   return (
     <main>
       <HeroSection />
-      <StatsSection />
       <ServicesSection />
-      <HowItWorks />
       <WhyChooseUs />
+      <HowItWorks />
       <UseCases />
       <FaqSection />
       <CtaSection />
