@@ -65,6 +65,7 @@ function RegisterForm() {
     <PortalRegisterCard
       subLabel="RENT PORTAL"
       portalLabel="Webzoka Rental"
+      businessPlaceholder="Contoh: Rental Jaya Trans"
       subscribe={subscribing}
       planLabel={planLabel}
       loginHref={loginHref}
