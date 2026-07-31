@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createCoreClient } from '@/lib/supabase/client'
 import { PortalLoginCard } from '@/components/auth/PortalLoginCard'
+import { isConnectionError, CONNECTION_ERROR_MESSAGE } from '@/lib/auth-error'
 
 export function LoginForm() {
   const router       = useRouter()
@@ -14,7 +15,13 @@ export function LoginForm() {
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      return { error: 'Email atau password salah. Silakan coba lagi.' }
+      // Server tumbang ≠ password salah. Menyamakan keduanya membuat pengguna
+      // mengulang-ulang password yang sebenarnya sudah benar.
+      return {
+        error: isConnectionError(authError)
+          ? CONNECTION_ERROR_MESSAGE
+          : 'Email atau password salah. Silakan coba lagi.',
+      }
     }
 
     // Smart redirect berdasarkan role. Utamakan klaim JWT `user_role` (dari auth-hook

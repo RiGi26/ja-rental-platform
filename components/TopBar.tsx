@@ -10,7 +10,17 @@ interface Props {
 export default function TopBar({ userName = 'Admin' }: Props) {
   const { toggleSidebar } = useLayoutStore()
 
-  const hour     = new Date().getHours()
+  // Jam dihitung di zona Jakarta, bukan zona mesin. Render server berjalan di UTC
+  // sementara browser pengguna di WIB, jadi `new Date().getHours()` menghasilkan dua
+  // sapaan berbeda untuk render yang sama → hydration mismatch (React #418) dan
+  // sapaan yang sempat salah sekejap sebelum diperbaiki klien.
+  const hour = Number(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone : 'Asia/Jakarta',
+      hour     : 'numeric',
+      hourCycle: 'h23',
+    }).format(new Date()),
+  )
   const greeting = hour < 12 ? 'Selamat Pagi' : hour < 17 ? 'Selamat Siang' : 'Selamat Malam'
   const initials = userName.slice(0, 2).toUpperCase()
 

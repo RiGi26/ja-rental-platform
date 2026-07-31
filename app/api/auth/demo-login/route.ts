@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createCoreClient } from '@/lib/supabase/server'
+import { isConnectionError, CONNECTION_ERROR_MESSAGE } from '@/lib/auth-error'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,6 +19,25 @@ export async function POST(request: Request) {
     email: creds.email, password: creds.password,
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 401 })
+  if (error) {
+    // Pesan mentah supabase-js ("fetch failed") tidak berarti apa-apa bagi pengunjung
+    // dan menyembunyikan penyebab aslinya. Catat detailnya untuk kita, kirim kalimat
+    // yang bisa ditindaklanjuti ke layar.
+    console.error('[demo-login] gagal', {
+      role,
+      name: error.name,
+      status: error.status,
+      message: error.message,
+    })
+
+    if (isConnectionError(error)) {
+      return NextResponse.json({ error: CONNECTION_ERROR_MESSAGE }, { status: 503 })
+    }
+    return NextResponse.json(
+      { error: 'Akun demo sedang tidak bisa dipakai. Hubungi admin lewat WhatsApp, ya.' },
+      { status: 401 },
+    )
+  }
+
   return NextResponse.json({ success: true, redirectTo: creds.redirect })
 }
