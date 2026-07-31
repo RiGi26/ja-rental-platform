@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { Globe, LogIn, User, ChevronDown, LogOut, ClipboardList, Settings } from 'lucide-react'
+import { Globe, LogIn, User, ChevronDown, LogOut, ClipboardList, Settings, Bus } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createCoreClient } from '@/lib/supabase/client'
 
@@ -57,13 +57,13 @@ export default function HeaderClient({ initialUser }: Props) {
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
 
-        {/* Logo */}
+        {/* Logo — satu identitas: Webzoka Rental & Travel (bukan "J" / "JaMobility"). */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#1A56DB] rounded-lg flex items-center justify-center text-white font-bold text-xl">
-            J
+          <div className="w-8 h-8 bg-[#1A56DB] rounded-lg flex items-center justify-center text-white">
+            <Bus size={18} aria-hidden />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight text-slate-900 hidden sm:block">
-            JaMobility
+          <span className="font-display font-bold text-lg tracking-tight text-slate-900 hidden sm:block">
+            Webzoka <span className="font-medium text-slate-500">Rental &amp; Travel</span>
           </span>
         </Link>
 
