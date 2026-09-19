@@ -4,11 +4,12 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createCoreClient } from '@/lib/supabase/client'
 import { PortalLoginCard } from '@/components/auth/PortalLoginCard'
 import { isConnectionError, CONNECTION_ERROR_MESSAGE } from '@/lib/auth-error'
+import { safeRentalNextPath } from '@/lib/auth-redirect'
 
 export function LoginForm() {
   const router       = useRouter()
   const searchParams = useSearchParams()
-  const next         = searchParams.get('next') ?? '/'
+  const next         = safeRentalNextPath(searchParams.get('next'))
 
   async function onSubmit(email: string, password: string) {
     const supabase = createCoreClient()

@@ -2,11 +2,12 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { RENTAL_APP_ORIGIN, safeRentalNextPath } from '@/lib/auth-redirect'
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/'
+  const next = safeRentalNextPath(searchParams.get('next'))
 
   if (code) {
     const cookieStore = await cookies()
@@ -25,8 +26,8 @@ export async function GET(request: NextRequest) {
       }
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) return NextResponse.redirect(`${origin}${next}`)
+    if (!error) return NextResponse.redirect(new URL(next, RENTAL_APP_ORIGIN))
   }
 
-  return NextResponse.redirect(`${origin}/auth/login?error=auth_failed`)
+  return NextResponse.redirect(new URL('/auth/login?error=auth_failed', RENTAL_APP_ORIGIN))
 }
