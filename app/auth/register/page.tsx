@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import RegisterForm from '@/components/auth/RegisterForm'
+import { safeRentalNextPath } from '@/lib/auth-redirect'
 
 export const metadata: Metadata = { title: 'Daftar' }
 
@@ -9,5 +10,5 @@ interface Props {
 
 export default async function RegisterPage({ searchParams }: Props) {
   const { next = '/' } = await searchParams
-  return <RegisterForm next={next} />
+  return <RegisterForm next={safeRentalNextPath(next)} />
 }
